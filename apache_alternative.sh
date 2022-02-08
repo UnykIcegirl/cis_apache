@@ -32,11 +32,19 @@ dirConf=$(ps -ef | grep httpd | grep -oE '/.*conf.*conf'| cut -d ' ' -f3| awk '{
 confDirectorio=${dirConf%/*}
 APACHE_PREFIX=${confDirectorio%?????}
 usuario=$(grep -i '^User' "$dirConf"| awk {'print $2'})
+grupo=$(grep -i '^Group' "$dirConf"| awk {'print $2'})
+
+fileError=$(httpd -V|grep 'ERRORLOG' | cut -d'=' -f 2|sed "s/\"//g")%/*
+errorDir=${fileError%/*}
+dirError=$APACHE_PREFIX$errorDir
+
 echo "Archivo de configuración: $dirConf"
 echo "Directorio Apache: $APACHE_PREFIX"
 echo "Usuario: $usuario"
+echo "Grupo: $grupo"
 
-
+cd $APACHE_PREFIX
+#echo $(pwd)
 echo -e "\n \n Instancias activas:" | tee  instancias_apache_$(hostname)_${fechan}.txt
 ps -fea | grep -ie httpd | grep -oE  "\-f /.*conf.*.conf " | cut -d ' ' -f2 | awk '{print $1}'| uniq | tee instancias_activas.txt
 echo ""
@@ -373,6 +381,173 @@ function Mod3_7(){
    fi
 }
 
+function Mod3_8(){
+   echo -e "\n\n\n 3.8 Ensure the Lock File Is Secured"
+   echo    "============================================"
+   ((++total))
+   variable=$(`grep -i dump $dirConf` 2>/dev/null)
+   variable2=$(`find /var/log/httpd/ -type d -perm /o=rwx -ls` 2>/dev/null)
+   #echo -e "Configuracion existente: \n" $(find -L $APACHE_PREFIX \! -type l -perm /o=w -ls 2>/dev/null) "\n"
+
+   # we captured output of the subshell, let's interpret it
+<< 'comment'   
+   if [ "$variable" = "$no_existe" ] ; then
+      if [ "$variable2" = "$no_existe" ] ; then
+         # print the reason why we are pass
+         echo -e "Es seguro el directorio 'Core Dump' -----------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+         ((++pass))
+      else
+         echo -e "Configuracion existente: \n" $(find /var/log/httpd/ -type d -perm /o=rwx -ls) "\n"
+         echo -e "Se tienen permisos no permitidos------------------------------------------------------------------------------------${RED} No Cumple ${WHITE}"
+         ((++fail))
+      fi
+   else
+      echo -e "Configuracion existente: \n" $(grep -i dump $dirConf) "\n"
+      echo -e "Se tiene la directiva de 'CoreDumpDirectory' habilitada ------------------------------------------------------------------------------${RED} No Cumple ${WHITE}"
+      ((++fail))
+   fi
+comment
+   echo -e "${RED} Pendiente CSA  ------------------------------------------------------------------------------${RED} No Cumple ${WHITE}"
+   ((++fail))
+}
+
+function Mod3_9(){
+   echo -e "\n\n\n 3.9 Ensure the Pid File Is Secured"
+   echo    "============================================"
+   ((++total))
+   
+   DireNot=`find -L /var/www/ -name httpd.pid |wc -l` 2>/dev/null
+   RutPid=`find -L $APACHE_PREFIX -name httpd.pid \! -user root |wc -l` 2>/dev/null
+   RutPidGp=`find -L $APACHE_PREFIX -name httpd.pid \! -group root |wc -l` 2>/dev/null
+   output=0
+   echo -e "Configuracion existente: \n" $(find -L $APACHE_PREFIX -name httpd.pid \! -user root) "\n"
+
+   # we captured output of the subshell, let's interpret it
+   if [ "$DireNot" != 0 ] ; then
+     output=1
+   else
+    if [ "$RutPid" != 0 ] ; then
+     output=1
+    else
+     if [ "$RutPidGp" != 0 ] ; then
+      output=1
+     fi
+    fi
+   fi
+
+   if [ "$output" != 0 ] ; then
+        echo -e "El archivo 'pidfile' debe tener los permisos de 'root:root' ------------------------------------------------------------------------${RED} No Cumple ${WHITE}"
+        ((++fail))
+   else
+        echo -e "Configuración correcta para el archivo 'pidfile'' ----------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+        ((++pass))
+   fi
+}
+
+function Mod3_10(){
+   echo -e "\n\n\n 3.10 Ensure the ScoreBoard File Is Secured"
+   echo    "====================================================="
+   ((++total))
+   
+   FilExis=$(find / -name ScoreBoardFile |wc -l)
+   FilExNoRut=$(find -L $APACHE_PREFIX -name ScoreBoardFile |wc -l)
+   PerFil=$(find $APACHE_PREFIX -name ScoreBoardFile \! -user root |wc -l)
+   PerFilGP=$(find $APACHE_PREFIX -name ScoreBoardFile \! -group root |wc -l)
+   PerRW=$(find $APACHE_PREFIX -name ScoreBoardFile \! -perm -644 |wc -l)
+   output=0
+
+   if [ "$FilExis" != 0 ] ; then
+    if [ "$FilExNoRut" != 0 ] ; then
+     output=1
+    else
+     if [ "$PerFil" != 0 ] ; then
+      output=1
+     else
+      if [ "$PerFilGP" != 0 ] ; then
+       output=1
+       else
+        if [ "$PerRW" != 0 ] ; then
+         output=1  
+        fi 
+      fi
+     fi
+    fi
+   fi
+
+   # we captured output of the subshell, let's interpret it
+   if [ "$output" != 0 ] ; then
+       # print the reason why we are failing
+       echo -e "El archivo 'scoreboard' debe tener los permisos de 'root:root' ---------------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+       echo -e "Configuración correcta para el archivo 'scoreboard' o no existe --------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod3_11(){
+   echo -e "\n\n\n 3.11 Ensure Group Write Access for the Apache Directories and Files Is Properly Restricted"
+   echo    "==================================================================================================="
+   ((++total))
+   echo -e "Configuracion existente: \n" $(find -L $APACHE_PREFIX \! -type l -perm /g=w -ls| head -5) "\n"
+
+   output=`find -L $APACHE_PREFIX \! -type l -perm /g=w -ls` 2>/dev/null
+
+   # we captured output of the subshell, let's interpret it
+   if [ "$output" != "" ] ; then
+       # print the reason why we are failing
+       echo -e "Los permisos en los directorios deberá ser 'r-x' -----------------------------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+       echo -e "Los permisos de escritura están restringidos correctamente -------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod3_12(){
+   echo -e "\n\n\n 3.12 Ensure Group Write Access for the Document Root Directories and Files Is Properly Restricted"
+   echo    "============================================================================================================"
+   ((++total))
+   GRP=$(grep '^Group' $dirConf | cut -d' ' -f2)
+   output=$(find -L $DocumentRoot -group $GRP -perm /g=w -ls)
+
+   echo -e "Configuracion existente: \n" $(find -L $DocumentRoot -group $GRP -perm /g=w -ls| head -5) "\n"
+
+   # we captured output of the subshell, let's interpret it
+   if [ "$output" != "" ] ; then
+       # print the reason why we are failing
+       echo -e "Los permisos de escritura en 'DocumentRoot' deben ser restringidos -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+       echo -e "Los permisos de escritura están restringidos correctamente -------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod4_1(){
+   echo -e "\n\n\n 3.13 Ensure Group Write Access for the Document Root Directories and Files Is Properly Restricted"
+   echo    "============================================================================================================"
+   ((++total))
+   GRP=$(grep '^Group' $dirConf | cut -d' ' -f2)
+   echo "A" $GRP
+   output=$(find -L $DocumentRoot -group $GRP -perm /g=w -ls)
+   echo "B" $output
+
+   echo -e "Configuracion existente: \n" $(find -L $DocumentRoot -group $GRP -perm /g=w -ls| head -5) "\n"
+
+   # we captured output of the subshell, let's interpret it
+   if [ "$output" != "" ] ; then
+       # print the reason why we are failing
+       echo -e "Los permisos de escritura en 'DocumentRoot' deben ser restringidos -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+       echo -e "Los permisos de escritura están restringidos correctamente -------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+
+
 
 
 
@@ -390,14 +565,14 @@ function calificacion(){
 
 function main(){
    #instanciasactivas
-   #Mod2_2
-   #Mod2_3
-   #Mod2_4
-   #Mod2_5
-   #Mod2_6
-   #Mod2_7
-   #Mod2_8
-   #Mod2_9
+   Mod2_2
+   Mod2_3
+   Mod2_4
+   Mod2_5
+   Mod2_6
+   Mod2_7
+   Mod2_8
+   Mod2_9
    
    #MODULO 3
    Mod3_1
@@ -407,6 +582,11 @@ function main(){
    Mod3_5
    Mod3_6
    Mod3_7
+   Mod3_8
+   Mod3_9
+   Mod3_10
+   Mod3_11
+   Mod3_12
 
    calificacion
    
