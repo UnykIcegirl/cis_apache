@@ -469,12 +469,22 @@ function Mod3_10(){
    echo -e "\n\n\n 3.10 Ensure the ScoreBoard File Is Secured"
    echo    "====================================================="
    ((++total))
+
+   usuario_validar=""
+   grupo_validar=""
+   if [ "$non_rootUser" = "true" ]; then
+      usuario_validar=$usuario
+      grupo_validar=$grupo
+   else
+      usuario_validar="root"
+      grupo_validar="root"
+   fi
    
-   FilExis=$(find / -name ScoreBoardFile |wc -l)
-   FilExNoRut=$(find -L $APACHE_PREFIX -name ScoreBoardFile |wc -l)
-   PerFil=$(find $APACHE_PREFIX -name ScoreBoardFile \! -user root |wc -l)
-   PerFilGP=$(find $APACHE_PREFIX -name ScoreBoardFile \! -group root |wc -l)
-   PerRW=$(find $APACHE_PREFIX -name ScoreBoardFile \! -perm -644 |wc -l)
+   FilExis=`find -name ScoreBoardFile |wc -l` 2>/dev/null
+   FilExNoRut=`find -L $APACHE_PREFIX/www/ -name ScoreBoardFile |wc -l` 2>/dev/null
+   PerFil=`find -name ScoreBoardFile \! -user $usuario_validar |wc -l` 2>/dev/null
+   PerFilGP=`find -name ScoreBoardFile \! -group $grupo_validar |wc -l` 2>/dev/null
+   PerRW=`find / -name ScoreBoardFile \! -perm -644 |wc -l` 2>/dev/null
    output=0
 
    if [ "$FilExis" != 0 ] ; then
@@ -546,36 +556,71 @@ function Mod3_12(){
 }
 
 function Mod4_1(){
-   echo -e "\n\n\n 3.13 Ensure Group Write Access for the Document Root Directories and Files Is Properly Restricted"
-   echo    "============================================================================================================"
+   echo -e "\n\n\n 4.1 Ensure Access to OS Root Directory Is Denied By Default"
+   echo    "======================================================================"
    ((++total))
-   GRP=$(grep '^Group' $dirConf | cut -d' ' -f2)
-   echo "A" $GRP
-   output=$(find -L $DocumentRoot -group $GRP -perm /g=w -ls)
-   echo "B" $output
 
-   echo -e "Configuracion existente: \n" $(find -L $DocumentRoot -group $GRP -perm /g=w -ls| head -5) "\n"
+   output=`perl -ne 'print if /^ *<Directory *\//i .. /<\/Directory/i' $dirConf |grep "Require all denied" |wc -l` 2>/dev/null
+   var2=`perl -ne 'print if /^ *<Directory *\//i .. /<\/Directory/i' $dirConf |grep "Require all denied" |wc -l` 2>/dev/null
+
+   echo -e "Configuracion existente: \n" $(perl -ne 'print if /^ *<Directory *\//i .. /<\/Directory/i' $dirConf |grep "Require all denied") "\n"
 
    # we captured output of the subshell, let's interpret it
-   if [ "$output" != "" ] ; then
+   if [ "$output" = 0 ] ; then
        # print the reason why we are failing
-       echo -e "Los permisos de escritura en 'DocumentRoot' deben ser restringidos -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       echo -e "Se tiene la función de acceso predeterminado --------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
        ((++fail))
    else
-       echo -e "Los permisos de escritura están restringidos correctamente -------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+   #   echo "pass"
+       echo -e "Se tiene denegado el acceso al directorio raíz del SO ---- -------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
        ((++pass))
+   fi
+}
+
+function Mod4_3(){
+   echo -e "\n\n\n 4.3 Ensure OverRide Is Disabled for the OS Root Directory"
+   echo    "==================================================================="
+   ((++total))
+
+   output=`perl -ne 'print if /^ *<Directory *\//i .. /<\/Directory/i' $dirConf|grep "AllowOverride None" | wc -l` 2>/dev/null
+   var2=`perl -ne 'print if /^ *<Directory *\//i .. /<\/Directory/i' $dirConf|grep "AllowOverrideList" | wc -l` 2>/dev/null  #(debe ser salida 0)
+
+   echo -e "Configuracion existente: \n" $(perl -ne 'print if /^ *<Directory *\//i .. /<\/Directory/i' $dirConf |grep "AllowOverride None") "\n"
+
+   # we captured output of the subshell, let's interpret it
+   if [ "$output" = 0 ] || [ "$var2" = 1  ]; then
+       # print the reason why we are failing
+       echo -e "No se tiene las directivas configuradas -------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+   #   echo "pass"
+       echo -e "Configuración de directivas correctas  ---------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod4_4(){
+   echo -e "\n\n\n 4.4 Ensure OverRide Is Disabled for All Directories"
+   echo    "=============================================================="
+   ((++total))
+
+   output=`grep -i AllowOverride "$dirConf"| grep -i "AllowOverrideList" |wc -l` 2>/dev/null
+   echo -e "Configuracion existente: \n" "$(grep -i "AllowOverride" "$dirConf" | grep -i "AllowOverrideList")" "\n"
+   
+   # we captured output of the subshell, let's interpret it
+   if [ "$output" != 0 ]; then
+	echo -e "Elimine la directiva 'AllowOverrideList' ------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+	((++fail))
+   else
+	echo -e "Configuración de directivas correctas ---------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+	((++pass))
    fi
 }
 
 
 
-
-
-
-
-
 function calificacion(){
-    echo -e "**********************************************************************************************************************************\n"
+    echo -e "\n\n\n**********************************************************************************************************************************\n"
     echo -e Controles totales: $total
     echo -e Controles cumplidos: ${YELLOW} $pass ${WHITE} 
     echo -e Controles no cumplidos ${RED} $fail ${WHITE}
@@ -586,6 +631,9 @@ function calificacion(){
 
 function main(){
    #instanciasactivas
+
+   # MODULO 2
+   #++++++++++
    Mod2_2
    Mod2_3
    Mod2_4
@@ -595,7 +643,8 @@ function main(){
    Mod2_8
    Mod2_9
    
-   #MODULO 3
+   # MODULO 3
+   #++++++++++
    Mod3_1
    Mod3_2
    Mod3_3
@@ -608,6 +657,12 @@ function main(){
    Mod3_10
    Mod3_11
    Mod3_12
+
+   # MODULO 4
+   #++++++++++
+   Mod4_1
+   Mod4_3
+   Mod4_4
 
    calificacion
    
