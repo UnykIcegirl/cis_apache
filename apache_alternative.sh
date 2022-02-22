@@ -23,6 +23,7 @@ declare total=0
 
 #Declaracion variables
 no_existe=""
+non_rootUser="false"
 
 echo -e "\n\n\n\n Equipo: " $hostname
 echo "Fecha: " $fecha
@@ -44,7 +45,7 @@ echo "Usuario: $usuario"
 echo "Grupo: $grupo"
 
 cd $APACHE_PREFIX
-#echo $(pwd)
+echo "PWD: $(pwd)"
 echo -e "\n \n Instancias activas:" | tee  instancias_apache_$(hostname)_${fechan}.txt
 ps -fea | grep -ie httpd | grep -oE  "\-f /.*conf.*.conf " | cut -d ' ' -f2 | awk '{print $1}'| uniq | tee instancias_activas.txt
 echo ""
@@ -246,6 +247,7 @@ function Mod3_1(){
             ((++fail))
          else
             echo -e "\n \n El usuario y grupo son especiales para el servicio-----------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+            non_rootUser="true"
             ((++pass))
          fi
       else
@@ -300,13 +302,12 @@ function Mod3_4(){
    echo -e "\n\n\n 3.4 Ensure Apache Directories and Files Are Owned By Root"
    echo    "============================================================================"
    ((++total))
-   #dirConf=$(ps -ef | grep httpd | grep -oE '/.*conf.*conf'| cut -d ' ' -f3| awk '{print $1}'| uniq)
-   #APACHE_PREFIX=${confDirectorio%?????}
-   variable=$(find $APACHE_PREFIX \! -user root -ls 2>/dev/null)
-   echo -e "Configuracion existente: \n" $(find $APACHE_PREFIX \! -user root -ls | head -5) "\n"
+   variable=$(find $APACHE_PREFIX -path $APACHE_PREFIX/htdocs -prune -o \! -user root -ls 2>/dev/null)
+   var_www=$(find $APACHE_PREFIX -path $APACHE_PREFIX/www -prune -o \! -user root -ls 2>/dev/null)
+   echo -e "Configuracion existente: \n" $(find $APACHE_PREFIX -path $APACHE_PREFIX/htdocs -prune -o \! -user root -ls | head -5) "\n" $(find $APACHE_PREFIX -path $APACHE_PREFIX/www -prune -o \! -user root -ls | head -5) "\n"
 
    # we captured output of the subshell, let's interpret it
-   if [ "$variable" = "$no_existe" ] ; then
+   if [ "$variable" = "$no_existe" && "$var_www" = "$no_existe" ] ; then
       # print the reason why we are pass
       echo -e "El directorio es propiedad del usuario root ---------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
       ((++pass))
@@ -321,13 +322,12 @@ function Mod3_5(){
    echo    "==============================================================================="
    # SE DEBERA JUSTIFICAR
    ((++total))
-   #dirConf=$(ps -ef | grep httpd | grep -oE '/.*conf.*conf'| cut -d ' ' -f3| awk '{print $1}'| uniq)
-   #APACHE_PREFIX=${confDirectorio%?????}
    variable=$(find $APACHE_PREFIX -path $APACHE_PREFIX/htdocs -prune -o \! -group root -ls 2>/dev/null)
-   echo -e "Configuracion existente: \n" $(find $APACHE_PREFIX -path $APACHE_PREFIX/htdocs -prune -o \! -group root -ls | head -5) "\n"
+   var_www=$(find $APACHE_PREFIX -path $APACHE_PREFIX/www -prune -o \! -group root -ls 2>/dev/null)
+   echo -e "Configuracion existente: \n" $(find $APACHE_PREFIX -path $APACHE_PREFIX/htdocs -prune -o \! -group root -ls | head -5) "\n" $(find $APACHE_PREFIX -path $APACHE_PREFIX/www -prune -o \! -group root -ls | head -5)
 
    # we captured output of the subshell, let's interpret it
-   if [ "$variable" = "$no_existe" ] ; then
+   if [ "$variable" = "$no_existe" && "$var_www" = "$no_existe" ] ; then
       # print the reason why we are pass
       echo -e "El directorio es propiedad del grupo root -----------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
       ((++pass))
@@ -341,7 +341,7 @@ function Mod3_6(){
    echo -e "\n\n\n 3.6 Ensure Other Write Access on Apache Directories and Files Is Restricted"
    echo    "====================================================================================="
    ((++total))
-   variable=$(find -L $APACHE_PREFIX \! -type l -perm /o=w -ls 2>/dev/null)
+   variable=$(find -L $APACHE_PREFIX \! -type l -perm -o=w -ls 2>/dev/null)
    echo -e "Configuracion existente: \n" $(find -L $APACHE_PREFIX \! -type l -perm /o=w -ls 2>/dev/null) "\n"
 
    # we captured output of the subshell, let's interpret it
@@ -360,7 +360,7 @@ function Mod3_7(){
    echo    "======================================================"
    ((++total))
    variable=$(`grep -i dump $dirConf` 2>/dev/null)
-   variable2=$(`find /var/log/httpd/ -type d -perm /o=rwx -ls` 2>/dev/null)
+   variable2=$(find $APACHE_PREFIX/logs/ -type d -perm -o=rwx -ls 2>/dev/null)
    #echo -e "Configuracion existente: \n" $(find -L $APACHE_PREFIX \! -type l -perm /o=w -ls 2>/dev/null) "\n"
 
    # we captured output of the subshell, let's interpret it
@@ -385,19 +385,32 @@ function Mod3_8(){
    echo -e "\n\n\n 3.8 Ensure the Lock File Is Secured"
    echo    "============================================"
    ((++total))
-   variable=$(`grep -i dump $dirConf` 2>/dev/null)
-   variable2=$(`find /var/log/httpd/ -type d -perm /o=rwx -ls` 2>/dev/null)
+   variable=$(`find -name httpd.lock|wc -l` 2>/dev/null)
+   variable2=$(`find $APACHE_PREFIX/logs/ -type d -perm -o=rwx -ls` 2>/dev/null)
+   
+   usuario_validar=""
+   grupo_validar=""
+   if [ "$non_rootUser" = "true" ]; then
+      usuario_validar=$usuario
+      grupo_validar=$grupo
+   else
+      usuario_validar="root"
+      grupo_validar="root"
+   fi
+
+   #echo "usuario: $usuario_validar  grupo: $grupo_validar"
+   
+   variable3=$(`find $APACHE_PREFIX/logs \! -user $usuario_validar -ls` 2>/dev/null)
+   variable4=$(`find $APACHE_PREFIX/logs \! -group $grupo_validar -ls` 2>/dev/null)
    #echo -e "Configuracion existente: \n" $(find -L $APACHE_PREFIX \! -type l -perm /o=w -ls 2>/dev/null) "\n"
 
    # we captured output of the subshell, let's interpret it
-<< 'comment'   
    if [ "$variable" = "$no_existe" ] ; then
-      if [ "$variable2" = "$no_existe" ] ; then
+      if [ "$variable2" = "$no_existe" ] && [ "$variable3" = "$no_existe" ] && [ "$variable4" = "$no_existe" ]; then
          # print the reason why we are pass
          echo -e "Es seguro el directorio 'Core Dump' -----------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
          ((++pass))
       else
-         echo -e "Configuracion existente: \n" $(find /var/log/httpd/ -type d -perm /o=rwx -ls) "\n"
          echo -e "Se tienen permisos no permitidos------------------------------------------------------------------------------------${RED} No Cumple ${WHITE}"
          ((++fail))
       fi
@@ -406,19 +419,27 @@ function Mod3_8(){
       echo -e "Se tiene la directiva de 'CoreDumpDirectory' habilitada ------------------------------------------------------------------------------${RED} No Cumple ${WHITE}"
       ((++fail))
    fi
-comment
-   echo -e "${RED} Pendiente CSA  ------------------------------------------------------------------------------${RED} No Cumple ${WHITE}"
-   ((++fail))
 }
 
 function Mod3_9(){
    echo -e "\n\n\n 3.9 Ensure the Pid File Is Secured"
    echo    "============================================"
    ((++total))
-   
-   DireNot=`find -L /var/www/ -name httpd.pid |wc -l` 2>/dev/null
-   RutPid=`find -L $APACHE_PREFIX -name httpd.pid \! -user root |wc -l` 2>/dev/null
-   RutPidGp=`find -L $APACHE_PREFIX -name httpd.pid \! -group root |wc -l` 2>/dev/null
+
+   usuario_validar=""
+   grupo_validar=""
+   if [ "$non_rootUser" = "true" ]; then
+      usuario_validar=$usuario
+      grupo_validar=$grupo
+   else
+      usuario_validar="root"
+      grupo_validar="root"
+   fi
+
+   DireNot=`find -L $APACHE_PREFIX/www/ -name httpd.pid |wc -l` 2>/dev/null
+   RutPid=`find -L $APACHE_PREFIX -name httpd.pid \! -user $usuario_validar |wc -l` 2>/dev/null
+   RutPidGp=`find -L $APACHE_PREFIX -name httpd.pid \! -group $grupo_validar |wc -l` 2>/dev/null
+   variable=$(`find $APACHE_PREFIX/logs/ -type d -perm -o=rwx -ls` 2>/dev/null)
    output=0
    echo -e "Configuracion existente: \n" $(find -L $APACHE_PREFIX -name httpd.pid \! -user root) "\n"
 
@@ -429,7 +450,7 @@ function Mod3_9(){
     if [ "$RutPid" != 0 ] ; then
      output=1
     else
-     if [ "$RutPidGp" != 0 ] ; then
+     if [ "$RutPidGp" != 0 ] && [ "$variable" = "$no_existe" ] ; then
       output=1
      fi
     fi
