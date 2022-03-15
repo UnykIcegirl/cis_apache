@@ -617,6 +617,357 @@ function Mod4_4(){
    fi
 }
 
+##### MODULO 5
+function Mod5_1(){
+   echo -e "\n\n\n 5.1 Ensure Options for the OS Root Directory Are Restricte"
+   echo    "===================================================================="
+   ((++total))
+
+   param1=`perl -ne 'print if /^ *<Directory */i .. /<\/Directory/i' $dirConf |grep Directory |wc -l` 2>/dev/null
+   param2=`perl -ne 'print if /^ *<Directory */i .. /<\/Directory/i' $dirConf |grep "Options None" |wc -l` 2>/dev/null
+
+   output=`expr $param1 / 2`
+   #echo $output
+   # we captured output of the subshell, let's interpret it
+   if [ $output != $param2 ] ; then
+   #    echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+   #    echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+	((++pass))
+   fi
+}
+
+function Mod5_2(){
+   echo -e "\n\n\n 5.2 Ensure Options for the Web Root Directory Are Restricted"
+   echo    "===================================================================="
+   ((++total))
+
+   param1=`perl -ne 'print if /^ *<Directory */i .. /<\/Directory/i' $dirConf |grep -i Directory |wc -l` 2>/dev/null
+   param2=`perl -ne 'print if /^ *<Directory */i .. /<\/Directory/i' $dirConf |grep -i "Options None" |wc -l` 2>/dev/null
+   param3=`perl -ne 'print if /^ *<Directory */i .. /<\/Directory/i' $dirConf |grep -i "Options Multiviews" |wc -l` 2>/dev/null
+
+
+   output=`expr $param1 / 2`
+   #echo $output
+   # we captured output of the subshell, let's interpret it
+   if [ $output != $param2 ] || [ $output != $param3 ] ; then
+   #    echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+   #    echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+	((++pass))
+   fi
+}
+
+function Mod5_3(){
+   echo -e "\n\n\n 5.3 Ensure Options for Other Directories Are Minimized"
+   echo    "===================================================================="
+   ((++total))
+
+   output=`perl -ne 'print if /^ *<Directory */i .. /<\/Directory/i' $dirConf |grep -i "Options Includes" | wc -l` 2>/dev/null
+
+   #echo $output
+   # we captured output of the subshell, let's interpret it
+   if [ "$output" = 0 ] ; then
+   #    echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+	((++pass))
+   else
+   #    echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+function Mod5_4(){
+   echo -e "\n\n\n 5.4 Ensure Default HTML Content Is Removed"
+   echo    "======================================================="
+   ((++total))
+
+   param=$(rpm -q httpd-manual | grep "no está instalado" | wc -l) 2>/dev/null
+   param2=$(grep -i -A 0 '#<LocationMatch[[:space:]]' $APACHE_PREFIX/conf.d/welcome.conf| wc -l) 2>/dev/null
+   param3=$(grep -i -A 0 '#<Location[[:space:]]"/server-status"' $dirConf | wc -l) 2>/dev/null
+   param31=$(grep -i -A 0 '<Location[[:space:]]"/server-status"' $dirConf | wc -l) 2>/dev/null
+   param4=$(grep -i -A 0  '#<Location[[:space:]]/perl-status' $dirConf | wc -l) 2>/dev/null
+   param41=$(grep -i -A 0  '<Location[[:space:]]/perl-status' $dirConf | wc -l) 2>/dev/null
+   output=0
+
+   if [ "$param" = 0 ] ; then
+      output=1
+   fi
+   if [ "$param2" = 0 ] ; then
+      output=1
+   fi
+   if [ "$param3" = 0 ] || [ "$param31" != 0 ] ; then
+      output=1
+   fi
+   if [ "$param4" = 0 ] || [ "$param41" != 0 ] ; then
+      output=1
+   fi
+   
+   echo $output
+   # we captured output of the subshell, let's interpret it
+   if [ "$output" != 0 ] ; then
+      #    echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+      #    echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+	((++pass))
+   fi
+}
+
+function Mod5_5(){
+   echo -e "\n\n\n 5.5 Ensure the Default CGI Content printenv Script Is Removed"
+   echo    "======================================================================="
+   ((++total))
+
+   param=$(grep -i -A 0 '#ScriptAlias /cgi-bin/' $dirConf |wc -l) 2>/dev/null
+   param2=$(find -name printenv |wc -l) 2>/dev/null
+   output=0
+
+   if [ "$param" != "" ] ; then
+      output=1
+   fi
+   if [ "$param2" != "" ] ; then
+      output=1
+   fi
+   
+   #echo $output
+   # we captured output of the subshell, let's interpret it
+   if [ "$output" = 0 ] ; then
+   #    echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+	((++pass))
+   else
+   #    echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+function Mod5_6(){
+   echo -e "\n\n\n 5.6 Ensure the Default CGI Content test-cgi Script Is Removed"
+   echo    "======================================================================="
+   ((++total))
+
+   output1=$(find / -name cgi-bin)
+   output2=$(find / -name test-cgi)
+
+   #echo $output1
+   #echo $output2
+   # we captured output of the subshell, let's interpret it
+   if [ "$output1" != "" ] || [ "$output2" != "" ] ; then
+       #echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+       #echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod5_7(){
+   echo -e "\n\n\n 5.7 Ensure HTTP Request Methods Are Restricted"
+   echo    "========================================================"
+   ((++total))
+  
+   # No. de bloques Directory a configurar
+   param1=$(awk '/^.Directory/{p=1}/^.\/Directory./{p=0;print}p' "$dirConf" | grep -i Directory | wc -l) 2>/dev/null
+   output=$(expr $param1 / 2)
+   # La configuracion de LimitExcept que se busca
+   param2=$(awk '/^.Directory/{p=1}/^.\/Directory./{p=0;print}p' "$dirConf" | grep -i -1 "^\s*<LimitExcept GET POST OPTIONS>" | grep -i "^\s*Require all denied" | wc -l) 2>/dev/null
+
+   # we captured output of the subshell, let's interpret it
+   if [ "$output" != $param2 ] ; then
+   #    echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+   #    echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod5_8(){
+   echo -e "\n\n\n 5.8 Ensure the HTTP TRACE Method Is Disabled"
+   echo    "====================================================="
+   ((++total))
+
+   output=$(grep -i "^\s*TraceEnable" "$dirConf" | awk '{print $2}')
+
+   # we captured output of the subshell, let's interpret it
+   if [ "$output" != "off" ] ; then
+       # print the reason why we are failing
+   #   echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+   #   echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod5_9(){
+   echo -e "\n\n\n 5.9 Ensure Old HTTP Protocol Versions Are Disallowed"
+   echo    "============================================================="
+   ((++total))
+
+   lodedmodule=$(httpd -M | grep -i rewrite)
+   engine=$(grep -i ^\s*RewriteEngine "$dirConf" | awk '{print $2}') 
+   cond1=$(grep -i "^\s*RewriteCond.*THE_REQUEST.*HTTP/1\\\.1\\$" "$dirConf")
+   rule=$(grep -i ^\s*RewriteRule "$dirConf")
+
+   engine=$(echo "$engine" | awk '{print tolower($0)}')
+   
+   # we captured output of the subshell, let's interpret it
+   if [ "$lodedmodule" != ""  ] &&  [ "$engine" == "on" ] && [ "$cond1" != ""  ] && [ "$rule" != ""  ]; then 
+   #   echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   else
+   #   echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+function Mod5_10(){
+   echo -e "\n\n\n 5.10 Ensure Access to .ht* Files Is Restricted"
+   echo    "========================================================="
+   ((++total))
+
+   filesmatch=$(grep -i "^\s*<FilesMatch\s\"^\\\\\.ht\">" "$dirConf")
+   filesmatch2=$(grep -i "^\s*<FilesMatch\s\"^\.\*\\$\">" "$dirConf")
+   require=$(grep -i "^\s*Require all denied" "$dirConf") 
+
+   engine=$(echo "$engine" | awk '{print tolower($0)}')
+   
+   # we captured output of the subshell, let's interpret it
+   if ([ "$filesmatch" != ""  ] ||  [ "$filesmatch2" != "" ]) && [ "$require" != "" ]; then 
+   #   echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   else
+   #   echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+function Mod5_11(){
+   echo -e "\n\n\n 5.11 Ensure Access to Inappropriate File Extensions Is Restricted"
+   echo    "==========================================================================="
+   ((++total))
+
+   filesmatch=$(grep -i "^\s*<FilesMatch\s\"^\.\*\\\\.*>" "$dirConf")
+   filesmatch2=$(egrep "\bFilesMatch.+css.+png.+$" "$dirConf")
+   require=$(grep -i "^\s*Require all denied" "$dirConf") 
+   require2=$(grep -i "^\s*Require all granted" "$dirConf")
+
+   engine=$(echo "$engine" | awk '{print tolower($0)}')
+
+   # we captured output of the subshell, let's interpret it
+   if [ "$filesmatch" != ""  ] && [ "$filesmatch2" != "" ] && [ "$require" != "" ] && [ "$require2" != "" ]; then 
+   #   echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   else
+   #   echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+function Mod5_12(){
+   echo -e "\n\n\n 5.12 Ensure IP Address Based Requests Are Disallowed"
+   echo    "================================================================="
+   ((++total))
+
+   lodedmodule=$(httpd -M | grep -i rewrite)
+   #echo $engine "as0"
+   engine=$(grep -i ^\s*RewriteEngine "$dirConf" | awk '{print $2}') 
+   #echo $engine "as1" 
+   cond1=$(grep -i ^\s*RewriteCond.*HTTP_HOST.* "$dirConf")
+   #echo $cond1 "as2"
+   cond2=$(grep -i "^\s*RewriteCond.*REQUEST_URI.*" "$dirConf")
+   #echo $cond2 "as3"
+   rule=$(grep -i "^\s*RewriteRule ^.(.*) - \[L,F\]" "$dirConf")
+   #echo $rule "as4"
+   
+   engine=$(echo "$engine" | awk '{print tolower($0)}')
+
+   # we captured output of the subshell, let's interpret it
+   if [ "$lodedmodule" != ""  ] &&  [ "$engine" == "on" ] && [ "$cond1" != ""  ] && [ "$cond2" != "" ] && [ "$rule" != ""  ]; then 
+   #   echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   else
+   #   echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+function Mod5_13(){
+   echo -e "\n\n\n 5.13 Ensure the IP Addresses for Listening for Requests Are Specified"
+   echo    "==============================================================================="
+   ((++total))
+
+   output=($(cat "$dirConf" | grep -i \^Listen | awk '{print $2}'))
+   good=0
+   
+   for item in ${output[@]}; do
+   	if [[ "$item" =~ ([0-9]{1,3}\.){3}[0-9]{1,3}\:[0-9]* ]]; then
+       		good=$(($good + 1))
+   		#echo $good
+   	fi
+   done
+    
+   
+   # we captured output of the subshell, let's interpret it
+   if [[ "$good" == ${#output[@]} ]]; then
+   #   echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   else
+       # print the reason why we are failing
+   #   echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+function Mod5_14(){
+   echo -e "\n\n\n 5.14 Ensure Browser Framing Is Restricted"
+   echo    "===================================================="
+   ((++total))
+
+   output=$(grep -i X-Frame-Options $dirConf)
+   always=$(echo $output | awk '{print $2}')
+   append=$(echo $output | awk '{print $3}')
+   origin=$(echo $output | awk '{print $5}')
+   
+   # we captured output of the subshell, let's interpret it
+   if [ "$always" == "always" ] && ([ "$append" == "append" ] || [ "$append" == "set" ]) && ([ "$origin" == "DENY" ] || [ "$origin" == "SAMEORIGIN" ]) ; then
+       #echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   else
+       #echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
 
 
 function calificacion(){
@@ -663,6 +1014,23 @@ function main(){
    Mod4_1
    Mod4_3
    Mod4_4
+
+   # MODULO 5
+   #++++++++++
+   Mod5_1
+   Mod5_2
+   Mod5_3
+   Mod5_4
+   Mod5_5
+   Mod5_6
+   Mod5_7
+   Mod5_8
+   Mod5_9
+   Mod5_10
+   Mod5_11
+   Mod5_12
+   Mod5_13
+   Mod5_14
 
    calificacion
    
