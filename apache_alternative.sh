@@ -710,7 +710,7 @@ function Mod5_4(){
       output=1
    fi
    
-   echo $output
+   #echo $output
    # we captured output of the subshell, let's interpret it
    if [ "$output" != 0 ] ; then
       #    echo "fallo"
@@ -952,13 +952,28 @@ function Mod5_14(){
    echo    "===================================================="
    ((++total))
 
+   bandera=0
    output=$(grep -i X-Frame-Options $dirConf)
    always=$(echo $output | awk '{print $2}')
    append=$(echo $output | awk '{print $3}')
    origin=$(echo $output | awk '{print $5}')
    
-   # we captured output of the subshell, let's interpret it
    if [ "$always" == "always" ] && ([ "$append" == "append" ] || [ "$append" == "set" ]) && ([ "$origin" == "DENY" ] || [ "$origin" == "SAMEORIGIN" ]) ; then
+       bandera=1
+   fi
+
+   output=$(grep -i Content-Security-Policy $dirConf)
+   always=$(echo $output | awk '{print $2}')
+   append=$(echo $output | awk '{print $3}')
+   frame=$(echo $output | awk '{print $5}')
+   origin=$(echo $output | awk '{print $5}')
+   
+   if [ "$always" == "always" ] && ([ "$append" == "append" ] || [ "$append" == "set" ]) && [ "$frame" == "frame-ancestors" ] && ([ "$origin" == "none" ] || [ "$origin" == "self" ]) ; then
+       bandera=1
+   fi
+
+   # we captured output of the subshell, let's interpret it   
+   if [ "$bandera" = 1 ] ; then
        #echo "pass"
        echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
        ((++pass))
@@ -968,6 +983,734 @@ function Mod5_14(){
        ((++fail))
    fi
 }
+
+##### MODULO 6
+function Mod6_1(){
+   echo -e "\n\n\n 6.1 Ensure the Error Log Filename and Severity Level Are Configured Correctly"
+   echo    "======================================================================================="
+   ((++total))
+
+   loglevel=$(grep -i \^LogLevel "$dirConf" | awk '{print $2}')
+   loglevelcore=$(grep -i \^LogLevel.*core:info "$dirConf")
+   errorlog=$(grep -i \^ErrorLog "$dirConf")
+   
+   # we captured output of the subshell, let's interpret it
+   if ([ "$loglevel" == "info" ] || [ "$loglevelcore" != "" ]) && [ "$errorlog" != "" ]; then 
+   #   echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   else
+   #   echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+function Mod6_2(){
+   echo -e "\n\n\n 6.2 Ensure a Syslog Facility Is Configured for Error Logging"
+   echo    "======================================================================="
+   ((++total))
+
+   errorlog=$(grep -i \^\s*ErrorLog.*syslog:local1\" "$dirConf")
+   
+   # we captured output of the subshell, let's interpret it
+   if [ "$errorlog" != "" ]; then 
+   #   echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   else
+   #   echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+function Mod6_3(){
+   echo -e "\n\n\n 6.3 Ensure the Server Access Log Is Configured Correctly"
+   echo    "==================================================================="
+   ((++total))
+
+   logformat=$(grep -i "^\s*LogFormat\s\"\(%[h,l,u,t]\s\)\{4\}\\\\\"\%r\\\\\"\s\%>s\s\%b\s\\\\\"\%{Referer}i\\\\\"\s\\\\\"\%{User-Agent}i\\\\\"\"\scombined" "$dirConf")
+   customlog=$(grep -i \^\\s*CustomLog.*combined  "$dirConf")
+   
+   # we captured output of the subshell, let's interpret it
+   if [ "$logformat" != "" ] && [ "$customlog" != "" ]; then 
+   #   echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   else
+   #   echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+function Mod6_4(){
+   echo -e "\n\n\n 6.4 Ensure Log Storage and Rotation Is Configured Correctly"
+   echo    "======================================================================"
+   ((++total))
+
+   logrotate=$(grep -i "^\s*/bin/kill -HUP 'cat /var/run/httpd.pid 2>/dev/null' 2> /dev/null || true" /etc/logrotate.d/httpd)
+   weekly=$(grep -i ^weekly /etc/logrotate.conf)
+   rotate=$(grep -i ^rotate /etc/logrotate.conf | awk '{print $2}')
+   
+   # we captured output of the subshell, let's interpret it
+   if [ "$logrotate" != "" ] && [ "$weekly" != ""  ] && [ $rotate -ge 13  ]; then 
+   #   echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   else
+   #   echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+function Mod6_6(){
+   echo -e "\n\n\n 6.6 Ensure ModSecurity Is Installed and Enabled"
+   echo    "=========================================================="
+   ((++total))
+
+   output=$(httpd -M | grep -i security2_module)
+   #echo $output
+   # we captured output of the subshell, let's interpret it
+   if [ "$output" != "" ] ; then
+      # echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   else
+      # echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+function Mod6_7(){
+   echo -e "\n\n\n 6.7 Ensure the OWASP ModSecurity Core Rule Set Is Installed and Enabled"
+   echo    "=============================================================================="
+   ((++total))
+
+   RULE_DIR="$APACHE_PREFIX"/modsecurity.d/owasp-modsecurity-crs
+   
+   rulecount=$(find $RULE_DIR -name '*.conf' | xargs grep -i '^SecRule ' | wc -l)
+   inanomaly=$(find $RULE_DIR -name '*.conf' | xargs egrep -v '^\s*#' | grep -i  "setvar:'tx.inbound_anomaly_score_threshold" | cut -d"=" -f2 | sed "s/'\"//g")
+   outanomaly=$(find $RULE_DIR -name '*.conf' | xargs egrep -v '^\s*#' | grep -i  "setvar:'tx.outbound_anomaly_score_threshold" | cut -d"=" -f2 | sed "s/'\"//g")
+   paranoia=$(find $RULE_DIR -name '*.conf' | xargs egrep -v '^\s*#' | grep -i  "setvar:'tx.outbound_anomaly_score_threshold" | cut -d"=" -f2 | sed "s/'\"//g")
+   
+   
+   # we captured output of the subshell, let's interpret it
+   if [ $rulecount -gt 325 ] && [ $inanomaly -le 5 ] && [ $outanomaly -le 4 ] && [ $paranoia -ge 1 ]; then 
+   #   echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   else
+   #   echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+
+##### MODULO 7
+function Mod7_1(){
+   echo -e "\n\n\n 7.1 Ensure mod_ssl and/or mod_nss Is Installed"
+   echo    "========================================================="
+   ((++total))
+   busqueda1='ssl_module'
+   busqueda2='nss_module'
+   variable=$(httpd -M | egrep 'ssl_module|nss_module' || apachectl -M | egrep 'ssl_module|nss_module' )
+   
+   #echo "cadena es: "$variable
+   if [[ "$variable" == *"$busqueda1"* ]] || [[ "$variable" == *"$busqueda2"* ]]; then
+   	# echo "pass"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   else
+       #echo "esta mal configurado NO TIENE ssl_module o nss_module.";
+       # echo "fallo"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+function Mod7_2(){
+   echo -e "\n\n\n 7.2 Ensure a Valid Trusted Certificate Is Installed"
+   echo    "============================================================="
+   ((++total))
+   SSLCONF="$APACHE_PREFIX"/"conf.d/ssl.conf"
+   #echo "archivo::: "$SSLCONF		
+   contFinal=0
+   contAux=0
+   	
+   if [[ -f "$SSLCONF" ]]; then
+   	#echo "Sí, sí existe el archivo"
+   	
+   	SSL=$(grep -i "^\s*SSLEngine" "$SSLCONF" | awk '{print $2}')
+   	SSLC=$(grep -i "^\s*SSLCertificateFile" "$SSLCONF" | awk '{print $2}')
+   	SSLK=$(grep -i "^\s*SSLCertificateKeyFile" "$SSLCONF" | awk '{print $2}')
+   	SSLCH=$(grep -i "^\s*SSLCertificateChainFile" "$SSLCONF" | awk '{print $2}')
+   	#echo "FILEKEY::: "$SSL
+   	#echo "STRING1::: "$SSLC
+   	#echo "STRING2::: "$SSLK
+   	#echo "STRING3::: "$SSLCH
+   	if [[ "$SSL" == "on" ]] && [[ -f "$SSLC" ]] && [[ -f "$SSLK" ]] && [[ -f "$SSLCH" ]]; then
+   		#echo "PASO-----"
+   		let contAux=contAux+1
+   	else
+   		#echo "fallo una de las valiacciones-----"
+   		let contFinal=contFinal+1
+   	fi
+   else
+   	#echo "No, no existe el archivo"
+   	let contFinal=contFinal+1
+   fi
+   
+   #echo "contador "$contFinal
+   
+   if [[ "$contFinal" > 0 ]]; then    
+     #echo "FALLO"; 
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "PASO";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod7_3(){
+   echo -e "\n\n\n 7.3 Ensure the Server's Private Key Is Protected"
+   echo    "=========================================================="
+   ((++total))
+
+   SSLCONF="$APACHE_PREFIX"/"conf.d/ssl.conf"
+   #echo "archivo::: "$SSLCONF		
+   contFinal=0
+   contAux=0
+   	
+   if [[ -f "$SSLCONF" ]]; then
+   	#echo "Sí, sí existe el archivo"
+   	
+   	
+   	FILEKEY=$(grep -i "^\s*SSLCertificateKeyFile" "$SSLCONF" | awk '{print $2}')
+   	STRING1=$(ls -l "$SSLCONF" | awk '{print $1}')
+   	STRING2=$(ls -l "$SSLCONF" | awk '{print $3}')
+   	STRING3=$(ls -l "$SSLCONF" | awk '{print $4}')
+   	
+   	#echo "FILEKEY::: "$FILEKEY
+   	#echo "STRING1::: "$STRING1
+   	#echo "STRING2::: "$STRING2
+   	#echo "STRING3::: "$STRING3
+   	
+   	if [[ "$STRING1" == *"-rw-r--r--."* ]] && [[ "$STRING2" == *"root"* ]] && [[ "$STRING3" == *"root"* ]]; then
+   		#echo "esta bien"; 
+   		let contAux=contAux+1
+   	else
+   		#echo "esta mal";
+   		let contFinal=contFinal+1  
+   	fi
+   	
+   else
+   	#echo "No, no existe el archivo"
+   	let contFinal=contFinal+1
+   fi
+   
+   #echo "contador "$contFinal   
+   if [[ "$contFinal" > 0 ]]; then    
+     #echo "FALLO"; 
+        echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "PASO";
+        echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod7_4(){
+   echo -e "\n\n\n 7.4 Ensure the TLSv1.0 and TLSv1.1 Protocols are Disabled"
+   echo    "=================================================================="
+   ((++total))
+
+   fnd=`find $APACHE_PREFIX -name ssl.conf`
+   #echo $fnd
+   
+   busqueda='SSLProtocol'
+   contador=$(grep -i -c "$busqueda" "$fnd")
+   rescat=$(cat "$fnd" | grep -i "$busqueda")
+   
+   contFinal=0
+   contAux=0
+   
+   #echo "cadena es::: "$rescat
+   if [[ "$contador" > 0 ]]; then    
+     #echo "tiene la cadena SSLProtocol"; 
+     if [[ "$rescat" == *"#"* ]]; then
+       #echo "esta comentado esta MAL esto.";
+   	let contFinal=contFinal+1 
+     else
+   	#echo "no esta comentada la cadena SSLProtocol"; 
+   	if [[ "$rescat" == *"TLSv1.2"* ]] || [[ "$rescat" == *"TLSv1.3"* ]]; then
+   		#echo "tiene SSLProtocol y tiene TLSv1.2 o TLSv1.3";
+   		let contAux=contAux+1
+   	else
+   		#echo "esta mal configurado ya que no tiene TLSv1.2 o TLSv1.3";
+   		let contFinal=contFinal+1  
+   	fi 
+     fi
+   else
+     #echo "no tiene la cadena SSLProtocol falta agregarla"; 
+     let contFinal=contFinal+1   
+   fi
+   
+   #echo "contador "$contFinal
+   
+   if [[ "$contFinal" > 0 ]]; then    
+     #echo "FALLO"; 
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "PASO";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod7_5(){
+   echo -e "\n\n\n 7.5 Ensure Weak SSL/TLS Ciphers Are Disabled"
+   echo    "======================================================"
+   ((++total))
+
+   fnd=`find $APACHE_PREFIX -name ssl.conf`
+   busqueda='SSLHonorCipherOrder On'
+   contador=$(grep -i -c "$busqueda" "$fnd")
+   rescat=$(cat "$fnd" | grep -i "$busqueda")
+   #echo $rescat
+   busqueda2='SSLCipherSuite ALL:!EXP:!NULL:!LOW:!SSLv2:!RC4:!aNULL'
+   contador2=$(grep -i -c "$busqueda2" "$fnd")
+   rescat2=$(cat "$fnd" | grep -i "$busqueda2")
+   echo $rescat2
+   contFinal=0
+   contAux=0
+   
+   #echo "cadena es::: "$rescat
+   if [[ "$contador" > 0 ]]; then    
+     #echo "tiene la cadena SSLHonorCipherOrder"; 
+     if [[ "$rescat" == *"#"* ]]; then
+       #echo "esta comentado esta MAL esto.";
+   	let contFinal=contFinal+1 
+     else
+   	#echo "no esta comentada la cadena SSLHonorCipherOrder"; 
+   	if [[ "$rescat" == *"off"* ]] || [[ "$rescat" == *"Off"* ]] || [[ "$rescat" == *"OFF"* ]]; then
+   		#echo "esta mal configurado ya que tiene off."; 
+   		let contFinal=contFinal+1  
+   	else
+   		#echo "tiene SSLHonorCipherOrder no encontro off";
+   		let contAux=contAux+1
+   	fi 
+     fi
+   else
+     #echo "no tiene la cadena SSLHonorCipherOrder falta agregarla"; 
+     let contFinal=contFinal+1   
+   fi
+   
+   #echo "cadena es::: "$rescat2
+   if [[ "$contador2" > 0 ]]; then    
+     #echo "tiene la cadena SSLCipherSuite"; 
+     if [[ "$rescat2" == *"#"* ]]; then
+       #echo "esta comentado esta MAL esto.";
+   	let contFinal=contFinal+1 
+     else
+   	#echo "no esta comentada la cadena SSLCipherSuite"; 
+   	if [[ "$rescat2" == *"!NULL"* ]] && [[ "$rescat2" == *"!SSLv2"* ]] && [[ "$rescat2" == *"!RC4"* ]] && [[ "$rescat2" == *"!aNULL"* ]] ; then
+   		#echo "tiene SSLCipherSuite y tiene estos !NULL:!SSLv2:!RC4:!aNULL";
+   		let contAux=contAux+1 
+   	else
+   		#echo "esta mal configurado ya que no la tiene estos !NULL:!SSLv2:!RC4:!aNULL"; 
+   		let contFinal=contFinal+1 
+   	fi 
+     fi
+   else
+     #echo "no tiene la cadena SSLCipherSuite falta agregarla"; 
+     let contFinal=contFinal+1   
+   fi
+   
+   #echo "contador "$contFinal
+   
+   if [[ "$contFinal" > 0 ]]; then    
+     #echo "FALLO"; 
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "PASO";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod7_6(){
+   echo -e "\n\n\n 7.6 Ensure Insecure SSL Renegotiation Is Not Enabled"
+   echo    "==============================================================="
+   ((++total))
+
+   busqueda='SSLInsecureRenegotiation'
+   contador=$(grep -i -c "$busqueda" "$dirConf")
+   rescat=$(cat "$dirConf" | grep -i "$busqueda")
+   
+   contFinal=0
+   contAux=0
+   
+   if [[ "$contador" > 0 ]]; then    
+     #echo "tiene la cadena "; 
+     if [[ "$rescat" == *"#"* ]]; then
+       #echo "esta comentado";
+   	let contAux=0; 
+     else
+   	#echo "no esta comentada"; 
+   	if [[ "$rescat" == *"off"* ]] || [[ "$rescat" == *"Off"* ]] || [[ "$rescat" == *"OFF"* ]]; then
+           #echo "esta deshabilitado";
+   		let contAux=0; 
+       else
+   		#echo "esta habilitado - mal"; 
+   		let contFinal=contFinal+1 
+       fi
+     fi 
+   fi
+   
+   if [[ "$contFinal" > 0 ]]; then    
+     #echo "FALLO"; 
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "PASO";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod7_7(){
+   echo -e "\n\n\n 7.7 Ensure SSL Compression is not Enabled"
+   echo    "==================================================="
+   ((++total))
+
+   busqueda='SSLCompression'
+   contador=$(grep -i -c "$busqueda" "$dirConf")
+   rescat=$(cat "$dirConf" | grep -i "$busqueda")
+
+   contFinal=0
+   contAux=0
+   
+   if [[ "$contador" > 0 ]]; then    
+     #echo "tiene la cadena "; 
+     if [[ "$rescat" == *"#"* ]]; then
+       #echo "esta comentado";
+   	let contAux=0; 
+     else
+   	#echo "no esta comentada"; 
+   	if [[ "$rescat" == *"off"* ]] || [[ "$rescat" == *"Off"* ]] || [[ "$rescat" == *"OFF"* ]]; then
+           #echo "esta deshabilitado";
+   		let contAux=0; 
+       else
+   		#echo "esta habilitado - mal"; 
+   		let contFinal=contFinal+1 
+       fi
+     fi 
+   fi
+   
+   if [[ "$contFinal" > 0 ]]; then    
+     #echo "FALLO"; 
+      echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "PASO";
+      echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod7_8(){
+   echo -e "\n\n\n 7.8 Ensure Medium Strength SSL/TLS Ciphers Are Disabled"
+   echo    "================================================================="
+   ((++total))
+
+   fnd=`find $APACHE_PREFIX -name ssl.conf`
+   busqueda='SSLHonorCipherOrder On'
+   contador=$(grep -i -c "$busqueda" "$fnd")
+   rescat=$(cat "$fnd" | grep -i "$busqueda")
+   
+   busqueda2='SSLCipherSuite ALL:!EXP:!NULL:!LOW:!SSLv2:!RC4:!aNULL:!3DES:!IDEA'
+   contador2=$(grep -i -c "$busqueda2" "$fnd")
+   rescat2=$(cat "$fnd" | grep -i "$busqueda2")
+   
+   contFinal=0
+   contAux=0
+   
+   #echo "cadena es::: "$rescat
+   if [[ "$contador" > 0 ]]; then    
+     #echo "tiene la cadena SSLHonorCipherOrder"; 
+     if [[ "$rescat" == *"#"* ]]; then
+       #echo "esta comentado esta MAL esto.";
+   	let contFinal=contFinal+1 
+     else
+   	#echo "no esta comentada la cadena SSLHonorCipherOrder"; 
+   	if [[ "$rescat" == *"off"* ]] || [[ "$rescat" == *"Off"* ]] || [[ "$rescat" == *"OFF"* ]]; then
+   		#echo "esta mal configurado ya que tiene off."; 
+   		let contFinal=contFinal+1  
+   	else
+   		#echo "tiene SSLHonorCipherOrder no encontro off";
+   		let contAux=contAux+1
+   	fi 
+     fi
+   else
+     #echo "no tiene la cadena SSLHonorCipherOrder falta agregarla"; 
+     let contFinal=contFinal+1   
+   fi
+   
+   #echo "cadena es::: "$rescat2
+   if [[ "$contador2" > 0 ]]; then    
+     #echo "tiene la cadena SSLCipherSuite"; 
+     if [[ "$rescat2" == *"#"* ]]; then
+       #echo "esta comentado esta MAL esto.";
+   	let contFinal=contFinal+1 
+     else
+   	#echo "no esta comentada la cadena SSLCipherSuite"; 
+   	if [[ "$rescat2" == *"!3DES"* ]] && [[ "$rescat2" == *"!IDEA"* ]]; then
+   		#echo "tiene SSLCipherSuite y tiene estos !NULL:!SSLv2:!RC4:!aNULL";
+   		let contAux=contAux+1 
+   	else
+   		#echo "esta mal configurado ya que no la tiene estos !NULL:!SSLv2:!RC4:!aNULL"; 
+   		let contFinal=contFinal+1 
+   	fi 
+     fi
+   else
+     #echo "no tiene la cadena SSLCipherSuite falta agregarla"; 
+     let contFinal=contFinal+1   
+   fi
+   
+   #echo "contador "$contFinal
+   
+   if [[ "$contFinal" > 0 ]]; then    
+     #echo "FALLO"; 
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "PASO";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod7_9(){
+   echo -e "\n\n\n 7.9 Ensure All Web Content is Accessed via HTTPS"
+   echo    "=========================================================="
+   ((++total))
+
+   cadena=$(grep -i "^\s*Redirect" "$dirConf")
+   #echo "salida: "$cadena;
+   
+   # we captured output of the subshell, let's interpret it
+   if [[ "$cadena" == *"https"* ]] ; then
+       #echo "PASO"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   else
+       #echo "FALLO"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+function Mod7_10(){
+   echo -e "\n\n\n 7.10 Ensure OCSP Stapling Is Enabled"
+   echo    "==============================================="
+   ((++total))
+
+   fnd=`find $APACHE_PREFIX -name ssl.conf`
+   
+   busqueda='SSLUseStapling'
+   contador=$(grep -i -c "$busqueda" "$fnd")
+   rescat=$(cat "$fnd" | grep -i "$busqueda")
+   
+   busqueda2='SSLStaplingCache'
+   contador2=$(grep -i -c "$busqueda2" "$fnd")
+   rescat2=$(cat "$fnd" | grep -i "$busqueda2")
+   
+   contFinal=0
+   contAux=0
+   
+   #echo "cadena es::: "$rescat
+   if [[ "$contador" > 0 ]]; then    
+     #echo "tiene la cadena SSLUseStapling"; 
+     if [[ "$rescat" == *"#"* ]]; then
+       #echo "esta comentado esta MAL esto.";
+   	let contFinal=contFinal+1 
+     else
+   	#echo "no esta comentada la cadena SSLUseStapling"; 
+   	if [[ "$rescat" == *"on"* ]] || [[ "$rescat" == *"On"* ]] || [[ "$rescat" == *"ON"* ]]; then
+   		#echo "tiene SSLUseStapling y esta en ON";
+   		let contAux=contAux+1
+   	else
+   		#echo "esta mal configurado ya que tiene on."; 
+   		let contFinal=contFinal+1  
+   	fi 
+     fi
+   else
+     #echo "no tiene la cadena SSLUseStapling falta agregarla"; 
+     let contFinal=contFinal+1   
+   fi
+   
+   #echo "cadena es::: "$rescat2
+   if [[ "$contador2" > 0 ]]; then    
+     #echo "tiene la cadena SSLStaplingCache"; 
+     if [[ "$rescat2" == *"#"* ]]; then
+       #echo "esta comentado esta MAL esto.";
+   	let contFinal=contFinal+1 
+     else
+   	#echo "no esta comentada la cadena SSLStaplingCache"; 
+   	if [[ "$rescat2" == *"logs"* ]] || [[ "$rescat2" == *"LOGS"* ]]; then
+   		#echo "contiene la palabra logs";
+   		let contAux=contAux+1 
+   	else
+   		#echo "esta mal configurado ya que no la tiene logs"; 
+   		let contFinal=contFinal+1 
+   	fi 
+     fi
+   else
+     #echo "no tiene la cadena SSLStaplingCache falta agregarla"; 
+     let contFinal=contFinal+1   
+   fi
+   
+   #echo "contador "$contFinal
+   
+   if [[ "$contFinal" > 0 ]]; then    
+     #echo "FALLO"; 
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "PASO";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi   
+}
+
+function Mod7_11(){
+   echo -e "\n\n\n 7.11 Ensure HTTP Strict Transport Security Is Enabled"
+   echo    "================================================================"
+   ((++total))
+
+   SSLCONF="$APACHE_PREFIX"/"conf.d/ssl.conf"
+   
+   #echo "archivo::: "$SSLCONF		
+   if [[ -f "$SSLCONF" ]]; then
+   	#echo "Sí, sí existe el archivo"
+   	
+   	busqueda='Header always set Strict-Transport-Security'
+   	contador=$(grep -i -c "$busqueda" "$SSLCONF")
+   	rescat=$(cat "$SSLCONF" | grep -i "$busqueda")
+   	contFinal=0
+   	contAux=0
+   
+   	#echo "cadena es::: "$rescat
+   	if [[ "$contador" > 0 ]]; then    
+   	  #echo "tiene la cadena Header always set Strict-Transport-Security"; 
+   	  if [[ "$rescat" == *"#"* ]]; then
+   		#echo "esta comentado esta MAL esto.";
+   		let contFinal=contFinal+1 
+   	  else
+   		#echo "no esta comentada la cadena Header always set Strict-Transport-Security"; 
+   		if [[ "$rescat" == *"max-age=600"* ]]; then
+   			#echo "tiene SSLHonorCipherOrder no encontro off";
+   			let contAux=contAux+1
+   		else
+   			#echo "esta mal configurado ya que NO TIENE max-age=600."; 
+   			let contFinal=contFinal+1  
+   		fi 
+   	  fi
+   	else
+   	  #echo "no tiene la cadena Header always set Strict-Transport-Security"; 
+   	  let contFinal=contFinal+1   
+   	fi
+   else
+   	#echo "No, no existe el archivo"
+   	let contFinal=contFinal+1
+   fi
+   
+   #echo "contador "$contFinal
+   
+   if [[ "$contFinal" > 0 ]]; then    
+     #echo "FALLO"; 
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "PASO";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod7_12(){
+   echo -e "\n\n\n 7.12 Ensure Only Cipher Suites That Provide Forward Secrecy Are Enabled"
+   echo    "================================================================================="
+   ((++total))
+
+   fnd=`find $APACHE_PREFIX -name ssl.conf`
+   
+   busqueda2='SSLCipherSuite EECDH:EDH:!NULL:!SSLv2:!RC4:!aNULL:!3DES:!IDEA'
+   contador2=$(grep -i -c "$busqueda2" "$fnd")
+   rescat2=$(cat "$fnd" | grep -i "$busqueda2")
+   
+   contFinal=0
+   contAux=0
+   
+   #echo "cadena es::: "$rescat2
+   if [[ "$contador2" > 0 ]]; then    
+     #echo "tiene la cadena SSLCipherSuite"; 
+     if [[ "$rescat2" == *"#"* ]]; then
+       #echo "esta comentado esta MAL esto.";
+   	let contFinal=contFinal+1 
+     else
+   	#echo "no esta comentada la cadena SSLCipherSuite"; 
+   	if [[ "$rescat2" == *"EECDH"* ]] || [[ "$rescat2" == *"ECDHE"* ]]; then
+   		#echo "tiene SSLCipherSuite y tiene estos  EECDH o ECDHE";
+   		
+   		if [[ "$rescat2" == *":EDH"* ]] || [[ "$rescat2" == *":DHE"* ]]; then
+   			#echo "tiene SSLCipherSuite y tiene estos  EDH o DHE";
+   			let contAux=contAux+1 
+   		else
+   			#echo "esta mal configurado ya que no la tiene estos  EECDH:EDH o ECDHE:DHE"; 
+   			let contFinal=contFinal+1 
+   		fi 
+   	else
+   		#echo "esta mal configurado ya que no la tiene estos  EECDH o ECDHE"; 
+   		let contFinal=contFinal+1 
+   	fi 
+     fi
+   else
+     #echo "no tiene la cadena SSLCipherSuite falta agregarla"; 
+     let contFinal=contFinal+1   
+   fi
+   
+   #echo "contador "$contFinal   
+   if [[ "$contFinal" > 0 ]]; then    
+     #echo "FALLO"; 
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "PASO";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+##### MODULO 8
+
+##### MODULO 9
+
+##### MODULO 10
+
+##### MODULO 11
+
+##### MODULO 12
 
 
 function calificacion(){
@@ -1031,6 +1774,45 @@ function main(){
    Mod5_12
    Mod5_13
    Mod5_14
+
+   # MODULO 6
+   #++++++++++
+   Mod6_1
+   Mod6_2
+   Mod6_3
+   Mod6_4
+   Mod6_6
+   Mod6_7
+
+   # MODULO 7
+   #++++++++++
+   Mod7_1
+   Mod7_2
+   Mod7_3
+   Mod7_4
+   Mod7_5
+   Mod7_6
+   Mod7_7
+   Mod7_8
+   Mod7_9
+   Mod7_10
+   Mod7_11
+   Mod7_12
+
+   # MODULO 8
+   #++++++++++
+
+   # MODULO 9
+   #++++++++++
+
+   # MODULO 10
+   #++++++++++
+
+   # MODULO 11
+   #++++++++++
+
+   # MODULO 12
+   #++++++++++
 
    calificacion
    
