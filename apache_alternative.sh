@@ -609,11 +609,11 @@ function Mod4_4(){
    
    # we captured output of the subshell, let's interpret it
    if [ "$output" != 0 ]; then
-	echo -e "Elimine la directiva 'AllowOverrideList' ------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
-	((++fail))
+   echo -e "Elimine la directiva 'AllowOverrideList' ------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+   ((++fail))
    else
-	echo -e "Configuración de directivas correctas ---------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
-	((++pass))
+   echo -e "Configuración de directivas correctas ---------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+   ((++pass))
    fi
 }
 
@@ -636,7 +636,7 @@ function Mod5_1(){
    else
    #    echo "pass"
        echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
-	((++pass))
+   ((++pass))
    fi
 }
 
@@ -660,7 +660,7 @@ function Mod5_2(){
    else
    #    echo "pass"
        echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
-	((++pass))
+   ((++pass))
    fi
 }
 
@@ -676,7 +676,7 @@ function Mod5_3(){
    if [ "$output" = 0 ] ; then
    #    echo "pass"
        echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
-	((++pass))
+   ((++pass))
    else
    #    echo "fallo"
        echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
@@ -719,7 +719,7 @@ function Mod5_4(){
    else
       #    echo "pass"
        echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
-	((++pass))
+   ((++pass))
    fi
 }
 
@@ -744,7 +744,7 @@ function Mod5_5(){
    if [ "$output" = 0 ] ; then
    #    echo "pass"
        echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
-	((++pass))
+   ((++pass))
    else
    #    echo "fallo"
        echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
@@ -927,10 +927,10 @@ function Mod5_13(){
    good=0
    
    for item in ${output[@]}; do
-   	if [[ "$item" =~ ([0-9]{1,3}\.){3}[0-9]{1,3}\:[0-9]* ]]; then
-       		good=$(($good + 1))
-   		#echo $good
-   	fi
+      if [[ "$item" =~ ([0-9]{1,3}\.){3}[0-9]{1,3}\:[0-9]* ]]; then
+            good=$(($good + 1))
+         #echo $good
+      fi
    done
     
    
@@ -1122,7 +1122,7 @@ function Mod7_1(){
    
    #echo "cadena es: "$variable
    if [[ "$variable" == *"$busqueda1"* ]] || [[ "$variable" == *"$busqueda2"* ]]; then
-   	# echo "pass"
+      # echo "pass"
        echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
        ((++pass))
    else
@@ -1138,31 +1138,31 @@ function Mod7_2(){
    echo    "============================================================="
    ((++total))
    SSLCONF="$APACHE_PREFIX"/"conf.d/ssl.conf"
-   #echo "archivo::: "$SSLCONF		
+   #echo "archivo::: "$SSLCONF      
    contFinal=0
    contAux=0
-   	
+      
    if [[ -f "$SSLCONF" ]]; then
-   	#echo "Sí, sí existe el archivo"
-   	
-   	SSL=$(grep -i "^\s*SSLEngine" "$SSLCONF" | awk '{print $2}')
-   	SSLC=$(grep -i "^\s*SSLCertificateFile" "$SSLCONF" | awk '{print $2}')
-   	SSLK=$(grep -i "^\s*SSLCertificateKeyFile" "$SSLCONF" | awk '{print $2}')
-   	SSLCH=$(grep -i "^\s*SSLCertificateChainFile" "$SSLCONF" | awk '{print $2}')
-   	#echo "FILEKEY::: "$SSL
-   	#echo "STRING1::: "$SSLC
-   	#echo "STRING2::: "$SSLK
-   	#echo "STRING3::: "$SSLCH
-   	if [[ "$SSL" == "on" ]] && [[ -f "$SSLC" ]] && [[ -f "$SSLK" ]] && [[ -f "$SSLCH" ]]; then
-   		#echo "PASO-----"
-   		let contAux=contAux+1
-   	else
-   		#echo "fallo una de las valiacciones-----"
-   		let contFinal=contFinal+1
-   	fi
+      #echo "Sí, sí existe el archivo"
+      
+      SSL=$(grep -i "^\s*SSLEngine" "$SSLCONF" | awk '{print $2}')
+      SSLC=$(grep -i "^\s*SSLCertificateFile" "$SSLCONF" | awk '{print $2}')
+      SSLK=$(grep -i "^\s*SSLCertificateKeyFile" "$SSLCONF" | awk '{print $2}')
+      SSLCH=$(grep -i "^\s*SSLCertificateChainFile" "$SSLCONF" | awk '{print $2}')
+      #echo "FILEKEY::: "$SSL
+      #echo "STRING1::: "$SSLC
+      #echo "STRING2::: "$SSLK
+      #echo "STRING3::: "$SSLCH
+      if [[ "$SSL" == "on" ]] && [[ -f "$SSLC" ]] && [[ -f "$SSLK" ]] && [[ -f "$SSLCH" ]]; then
+         #echo "PASO-----"
+         let contAux=contAux+1
+      else
+         #echo "fallo una de las valiacciones-----"
+         let contFinal=contFinal+1
+      fi
    else
-   	#echo "No, no existe el archivo"
-   	let contFinal=contFinal+1
+      #echo "No, no existe el archivo"
+      let contFinal=contFinal+1
    fi
    
    #echo "contador "$contFinal
@@ -1184,35 +1184,35 @@ function Mod7_3(){
    ((++total))
 
    SSLCONF="$APACHE_PREFIX"/"conf.d/ssl.conf"
-   #echo "archivo::: "$SSLCONF		
+   #echo "archivo::: "$SSLCONF      
    contFinal=0
    contAux=0
-   	
+      
    if [[ -f "$SSLCONF" ]]; then
-   	#echo "Sí, sí existe el archivo"
-   	
-   	
-   	FILEKEY=$(grep -i "^\s*SSLCertificateKeyFile" "$SSLCONF" | awk '{print $2}')
-   	STRING1=$(ls -l "$SSLCONF" | awk '{print $1}')
-   	STRING2=$(ls -l "$SSLCONF" | awk '{print $3}')
-   	STRING3=$(ls -l "$SSLCONF" | awk '{print $4}')
-   	
-   	#echo "FILEKEY::: "$FILEKEY
-   	#echo "STRING1::: "$STRING1
-   	#echo "STRING2::: "$STRING2
-   	#echo "STRING3::: "$STRING3
-   	
-   	if [[ "$STRING1" == *"-rw-r--r--."* ]] && [[ "$STRING2" == *"root"* ]] && [[ "$STRING3" == *"root"* ]]; then
-   		#echo "esta bien"; 
-   		let contAux=contAux+1
-   	else
-   		#echo "esta mal";
-   		let contFinal=contFinal+1  
-   	fi
-   	
+      #echo "Sí, sí existe el archivo"
+      
+      
+      FILEKEY=$(grep -i "^\s*SSLCertificateKeyFile" "$SSLCONF" | awk '{print $2}')
+      STRING1=$(ls -l "$SSLCONF" | awk '{print $1}')
+      STRING2=$(ls -l "$SSLCONF" | awk '{print $3}')
+      STRING3=$(ls -l "$SSLCONF" | awk '{print $4}')
+      
+      #echo "FILEKEY::: "$FILEKEY
+      #echo "STRING1::: "$STRING1
+      #echo "STRING2::: "$STRING2
+      #echo "STRING3::: "$STRING3
+      
+      if [[ "$STRING1" == *"-rw-r--r--."* ]] && [[ "$STRING2" == *"root"* ]] && [[ "$STRING3" == *"root"* ]]; then
+         #echo "esta bien"; 
+         let contAux=contAux+1
+      else
+         #echo "esta mal";
+         let contFinal=contFinal+1  
+      fi
+      
    else
-   	#echo "No, no existe el archivo"
-   	let contFinal=contFinal+1
+      #echo "No, no existe el archivo"
+      let contFinal=contFinal+1
    fi
    
    #echo "contador "$contFinal   
@@ -1247,16 +1247,16 @@ function Mod7_4(){
      #echo "tiene la cadena SSLProtocol"; 
      if [[ "$rescat" == *"#"* ]]; then
        #echo "esta comentado esta MAL esto.";
-   	let contFinal=contFinal+1 
+      let contFinal=contFinal+1 
      else
-   	#echo "no esta comentada la cadena SSLProtocol"; 
-   	if [[ "$rescat" == *"TLSv1.2"* ]] || [[ "$rescat" == *"TLSv1.3"* ]]; then
-   		#echo "tiene SSLProtocol y tiene TLSv1.2 o TLSv1.3";
-   		let contAux=contAux+1
-   	else
-   		#echo "esta mal configurado ya que no tiene TLSv1.2 o TLSv1.3";
-   		let contFinal=contFinal+1  
-   	fi 
+      #echo "no esta comentada la cadena SSLProtocol"; 
+      if [[ "$rescat" == *"TLSv1.2"* ]] || [[ "$rescat" == *"TLSv1.3"* ]]; then
+         #echo "tiene SSLProtocol y tiene TLSv1.2 o TLSv1.3";
+         let contAux=contAux+1
+      else
+         #echo "esta mal configurado ya que no tiene TLSv1.2 o TLSv1.3";
+         let contFinal=contFinal+1  
+      fi 
      fi
    else
      #echo "no tiene la cadena SSLProtocol falta agregarla"; 
@@ -1298,16 +1298,16 @@ function Mod7_5(){
      #echo "tiene la cadena SSLHonorCipherOrder"; 
      if [[ "$rescat" == *"#"* ]]; then
        #echo "esta comentado esta MAL esto.";
-   	let contFinal=contFinal+1 
+      let contFinal=contFinal+1 
      else
-   	#echo "no esta comentada la cadena SSLHonorCipherOrder"; 
-   	if [[ "$rescat" == *"off"* ]] || [[ "$rescat" == *"Off"* ]] || [[ "$rescat" == *"OFF"* ]]; then
-   		#echo "esta mal configurado ya que tiene off."; 
-   		let contFinal=contFinal+1  
-   	else
-   		#echo "tiene SSLHonorCipherOrder no encontro off";
-   		let contAux=contAux+1
-   	fi 
+      #echo "no esta comentada la cadena SSLHonorCipherOrder"; 
+      if [[ "$rescat" == *"off"* ]] || [[ "$rescat" == *"Off"* ]] || [[ "$rescat" == *"OFF"* ]]; then
+         #echo "esta mal configurado ya que tiene off."; 
+         let contFinal=contFinal+1  
+      else
+         #echo "tiene SSLHonorCipherOrder no encontro off";
+         let contAux=contAux+1
+      fi 
      fi
    else
      #echo "no tiene la cadena SSLHonorCipherOrder falta agregarla"; 
@@ -1319,16 +1319,16 @@ function Mod7_5(){
      #echo "tiene la cadena SSLCipherSuite"; 
      if [[ "$rescat2" == *"#"* ]]; then
        #echo "esta comentado esta MAL esto.";
-   	let contFinal=contFinal+1 
+      let contFinal=contFinal+1 
      else
-   	#echo "no esta comentada la cadena SSLCipherSuite"; 
-   	if [[ "$rescat2" == *"!NULL"* ]] && [[ "$rescat2" == *"!SSLv2"* ]] && [[ "$rescat2" == *"!RC4"* ]] && [[ "$rescat2" == *"!aNULL"* ]] ; then
-   		#echo "tiene SSLCipherSuite y tiene estos !NULL:!SSLv2:!RC4:!aNULL";
-   		let contAux=contAux+1 
-   	else
-   		#echo "esta mal configurado ya que no la tiene estos !NULL:!SSLv2:!RC4:!aNULL"; 
-   		let contFinal=contFinal+1 
-   	fi 
+      #echo "no esta comentada la cadena SSLCipherSuite"; 
+      if [[ "$rescat2" == *"!NULL"* ]] && [[ "$rescat2" == *"!SSLv2"* ]] && [[ "$rescat2" == *"!RC4"* ]] && [[ "$rescat2" == *"!aNULL"* ]] ; then
+         #echo "tiene SSLCipherSuite y tiene estos !NULL:!SSLv2:!RC4:!aNULL";
+         let contAux=contAux+1 
+      else
+         #echo "esta mal configurado ya que no la tiene estos !NULL:!SSLv2:!RC4:!aNULL"; 
+         let contFinal=contFinal+1 
+      fi 
      fi
    else
      #echo "no tiene la cadena SSLCipherSuite falta agregarla"; 
@@ -1364,15 +1364,15 @@ function Mod7_6(){
      #echo "tiene la cadena "; 
      if [[ "$rescat" == *"#"* ]]; then
        #echo "esta comentado";
-   	let contAux=0; 
+      let contAux=0; 
      else
-   	#echo "no esta comentada"; 
-   	if [[ "$rescat" == *"off"* ]] || [[ "$rescat" == *"Off"* ]] || [[ "$rescat" == *"OFF"* ]]; then
+      #echo "no esta comentada"; 
+      if [[ "$rescat" == *"off"* ]] || [[ "$rescat" == *"Off"* ]] || [[ "$rescat" == *"OFF"* ]]; then
            #echo "esta deshabilitado";
-   		let contAux=0; 
+         let contAux=0; 
        else
-   		#echo "esta habilitado - mal"; 
-   		let contFinal=contFinal+1 
+         #echo "esta habilitado - mal"; 
+         let contFinal=contFinal+1 
        fi
      fi 
    fi
@@ -1404,15 +1404,15 @@ function Mod7_7(){
      #echo "tiene la cadena "; 
      if [[ "$rescat" == *"#"* ]]; then
        #echo "esta comentado";
-   	let contAux=0; 
+      let contAux=0; 
      else
-   	#echo "no esta comentada"; 
-   	if [[ "$rescat" == *"off"* ]] || [[ "$rescat" == *"Off"* ]] || [[ "$rescat" == *"OFF"* ]]; then
+      #echo "no esta comentada"; 
+      if [[ "$rescat" == *"off"* ]] || [[ "$rescat" == *"Off"* ]] || [[ "$rescat" == *"OFF"* ]]; then
            #echo "esta deshabilitado";
-   		let contAux=0; 
+         let contAux=0; 
        else
-   		#echo "esta habilitado - mal"; 
-   		let contFinal=contFinal+1 
+         #echo "esta habilitado - mal"; 
+         let contFinal=contFinal+1 
        fi
      fi 
    fi
@@ -1450,16 +1450,16 @@ function Mod7_8(){
      #echo "tiene la cadena SSLHonorCipherOrder"; 
      if [[ "$rescat" == *"#"* ]]; then
        #echo "esta comentado esta MAL esto.";
-   	let contFinal=contFinal+1 
+      let contFinal=contFinal+1 
      else
-   	#echo "no esta comentada la cadena SSLHonorCipherOrder"; 
-   	if [[ "$rescat" == *"off"* ]] || [[ "$rescat" == *"Off"* ]] || [[ "$rescat" == *"OFF"* ]]; then
-   		#echo "esta mal configurado ya que tiene off."; 
-   		let contFinal=contFinal+1  
-   	else
-   		#echo "tiene SSLHonorCipherOrder no encontro off";
-   		let contAux=contAux+1
-   	fi 
+      #echo "no esta comentada la cadena SSLHonorCipherOrder"; 
+      if [[ "$rescat" == *"off"* ]] || [[ "$rescat" == *"Off"* ]] || [[ "$rescat" == *"OFF"* ]]; then
+         #echo "esta mal configurado ya que tiene off."; 
+         let contFinal=contFinal+1  
+      else
+         #echo "tiene SSLHonorCipherOrder no encontro off";
+         let contAux=contAux+1
+      fi 
      fi
    else
      #echo "no tiene la cadena SSLHonorCipherOrder falta agregarla"; 
@@ -1471,16 +1471,16 @@ function Mod7_8(){
      #echo "tiene la cadena SSLCipherSuite"; 
      if [[ "$rescat2" == *"#"* ]]; then
        #echo "esta comentado esta MAL esto.";
-   	let contFinal=contFinal+1 
+      let contFinal=contFinal+1 
      else
-   	#echo "no esta comentada la cadena SSLCipherSuite"; 
-   	if [[ "$rescat2" == *"!3DES"* ]] && [[ "$rescat2" == *"!IDEA"* ]]; then
-   		#echo "tiene SSLCipherSuite y tiene estos !NULL:!SSLv2:!RC4:!aNULL";
-   		let contAux=contAux+1 
-   	else
-   		#echo "esta mal configurado ya que no la tiene estos !NULL:!SSLv2:!RC4:!aNULL"; 
-   		let contFinal=contFinal+1 
-   	fi 
+      #echo "no esta comentada la cadena SSLCipherSuite"; 
+      if [[ "$rescat2" == *"!3DES"* ]] && [[ "$rescat2" == *"!IDEA"* ]]; then
+         #echo "tiene SSLCipherSuite y tiene estos !NULL:!SSLv2:!RC4:!aNULL";
+         let contAux=contAux+1 
+      else
+         #echo "esta mal configurado ya que no la tiene estos !NULL:!SSLv2:!RC4:!aNULL"; 
+         let contFinal=contFinal+1 
+      fi 
      fi
    else
      #echo "no tiene la cadena SSLCipherSuite falta agregarla"; 
@@ -1543,16 +1543,16 @@ function Mod7_10(){
      #echo "tiene la cadena SSLUseStapling"; 
      if [[ "$rescat" == *"#"* ]]; then
        #echo "esta comentado esta MAL esto.";
-   	let contFinal=contFinal+1 
+      let contFinal=contFinal+1 
      else
-   	#echo "no esta comentada la cadena SSLUseStapling"; 
-   	if [[ "$rescat" == *"on"* ]] || [[ "$rescat" == *"On"* ]] || [[ "$rescat" == *"ON"* ]]; then
-   		#echo "tiene SSLUseStapling y esta en ON";
-   		let contAux=contAux+1
-   	else
-   		#echo "esta mal configurado ya que tiene on."; 
-   		let contFinal=contFinal+1  
-   	fi 
+      #echo "no esta comentada la cadena SSLUseStapling"; 
+      if [[ "$rescat" == *"on"* ]] || [[ "$rescat" == *"On"* ]] || [[ "$rescat" == *"ON"* ]]; then
+         #echo "tiene SSLUseStapling y esta en ON";
+         let contAux=contAux+1
+      else
+         #echo "esta mal configurado ya que tiene on."; 
+         let contFinal=contFinal+1  
+      fi 
      fi
    else
      #echo "no tiene la cadena SSLUseStapling falta agregarla"; 
@@ -1564,16 +1564,16 @@ function Mod7_10(){
      #echo "tiene la cadena SSLStaplingCache"; 
      if [[ "$rescat2" == *"#"* ]]; then
        #echo "esta comentado esta MAL esto.";
-   	let contFinal=contFinal+1 
+      let contFinal=contFinal+1 
      else
-   	#echo "no esta comentada la cadena SSLStaplingCache"; 
-   	if [[ "$rescat2" == *"logs"* ]] || [[ "$rescat2" == *"LOGS"* ]]; then
-   		#echo "contiene la palabra logs";
-   		let contAux=contAux+1 
-   	else
-   		#echo "esta mal configurado ya que no la tiene logs"; 
-   		let contFinal=contFinal+1 
-   	fi 
+      #echo "no esta comentada la cadena SSLStaplingCache"; 
+      if [[ "$rescat2" == *"logs"* ]] || [[ "$rescat2" == *"LOGS"* ]]; then
+         #echo "contiene la palabra logs";
+         let contAux=contAux+1 
+      else
+         #echo "esta mal configurado ya que no la tiene logs"; 
+         let contFinal=contFinal+1 
+      fi 
      fi
    else
      #echo "no tiene la cadena SSLStaplingCache falta agregarla"; 
@@ -1600,39 +1600,39 @@ function Mod7_11(){
 
    SSLCONF="$APACHE_PREFIX"/"conf.d/ssl.conf"
    
-   #echo "archivo::: "$SSLCONF		
+   #echo "archivo::: "$SSLCONF      
    if [[ -f "$SSLCONF" ]]; then
-   	#echo "Sí, sí existe el archivo"
-   	
-   	busqueda='Header always set Strict-Transport-Security'
-   	contador=$(grep -i -c "$busqueda" "$SSLCONF")
-   	rescat=$(cat "$SSLCONF" | grep -i "$busqueda")
-   	contFinal=0
-   	contAux=0
+      #echo "Sí, sí existe el archivo"
+      
+      busqueda='Header always set Strict-Transport-Security'
+      contador=$(grep -i -c "$busqueda" "$SSLCONF")
+      rescat=$(cat "$SSLCONF" | grep -i "$busqueda")
+      contFinal=0
+      contAux=0
    
-   	#echo "cadena es::: "$rescat
-   	if [[ "$contador" > 0 ]]; then    
-   	  #echo "tiene la cadena Header always set Strict-Transport-Security"; 
-   	  if [[ "$rescat" == *"#"* ]]; then
-   		#echo "esta comentado esta MAL esto.";
-   		let contFinal=contFinal+1 
-   	  else
-   		#echo "no esta comentada la cadena Header always set Strict-Transport-Security"; 
-   		if [[ "$rescat" == *"max-age=600"* ]]; then
-   			#echo "tiene SSLHonorCipherOrder no encontro off";
-   			let contAux=contAux+1
-   		else
-   			#echo "esta mal configurado ya que NO TIENE max-age=600."; 
-   			let contFinal=contFinal+1  
-   		fi 
-   	  fi
-   	else
-   	  #echo "no tiene la cadena Header always set Strict-Transport-Security"; 
-   	  let contFinal=contFinal+1   
-   	fi
+      #echo "cadena es::: "$rescat
+      if [[ "$contador" > 0 ]]; then    
+        #echo "tiene la cadena Header always set Strict-Transport-Security"; 
+        if [[ "$rescat" == *"#"* ]]; then
+         #echo "esta comentado esta MAL esto.";
+         let contFinal=contFinal+1 
+        else
+         #echo "no esta comentada la cadena Header always set Strict-Transport-Security"; 
+         if [[ "$rescat" == *"max-age=600"* ]]; then
+            #echo "tiene SSLHonorCipherOrder no encontro off";
+            let contAux=contAux+1
+         else
+            #echo "esta mal configurado ya que NO TIENE max-age=600."; 
+            let contFinal=contFinal+1  
+         fi 
+        fi
+      else
+        #echo "no tiene la cadena Header always set Strict-Transport-Security"; 
+        let contFinal=contFinal+1   
+      fi
    else
-   	#echo "No, no existe el archivo"
-   	let contFinal=contFinal+1
+      #echo "No, no existe el archivo"
+      let contFinal=contFinal+1
    fi
    
    #echo "contador "$contFinal
@@ -1667,23 +1667,23 @@ function Mod7_12(){
      #echo "tiene la cadena SSLCipherSuite"; 
      if [[ "$rescat2" == *"#"* ]]; then
        #echo "esta comentado esta MAL esto.";
-   	let contFinal=contFinal+1 
+      let contFinal=contFinal+1 
      else
-   	#echo "no esta comentada la cadena SSLCipherSuite"; 
-   	if [[ "$rescat2" == *"EECDH"* ]] || [[ "$rescat2" == *"ECDHE"* ]]; then
-   		#echo "tiene SSLCipherSuite y tiene estos  EECDH o ECDHE";
-   		
-   		if [[ "$rescat2" == *":EDH"* ]] || [[ "$rescat2" == *":DHE"* ]]; then
-   			#echo "tiene SSLCipherSuite y tiene estos  EDH o DHE";
-   			let contAux=contAux+1 
-   		else
-   			#echo "esta mal configurado ya que no la tiene estos  EECDH:EDH o ECDHE:DHE"; 
-   			let contFinal=contFinal+1 
-   		fi 
-   	else
-   		#echo "esta mal configurado ya que no la tiene estos  EECDH o ECDHE"; 
-   		let contFinal=contFinal+1 
-   	fi 
+      #echo "no esta comentada la cadena SSLCipherSuite"; 
+      if [[ "$rescat2" == *"EECDH"* ]] || [[ "$rescat2" == *"ECDHE"* ]]; then
+         #echo "tiene SSLCipherSuite y tiene estos  EECDH o ECDHE";
+         
+         if [[ "$rescat2" == *":EDH"* ]] || [[ "$rescat2" == *":DHE"* ]]; then
+            #echo "tiene SSLCipherSuite y tiene estos  EDH o DHE";
+            let contAux=contAux+1 
+         else
+            #echo "esta mal configurado ya que no la tiene estos  EECDH:EDH o ECDHE:DHE"; 
+            let contFinal=contFinal+1 
+         fi 
+      else
+         #echo "esta mal configurado ya que no la tiene estos  EECDH o ECDHE"; 
+         let contFinal=contFinal+1 
+      fi 
      fi
    else
      #echo "no tiene la cadena SSLCipherSuite falta agregarla"; 
@@ -1703,14 +1703,713 @@ function Mod7_12(){
 }
 
 ##### MODULO 8
+function Mod8_1(){
+   echo -e "\n\n\n 8.1 Ensure ServerTokens is Set to 'Prod' or 'ProductOnly'"
+   echo    "===================================================================="
+   ((++total))
+
+   busqueda='ServerTokens'
+   contador=$(grep -i -c "$busqueda" "$dirConf")
+   rescat=$(cat "$dirConf" | grep -i "$busqueda")
+   
+   contFinal=0
+   contAux=0
+   
+   if [[ "$contador" > 0 ]]; then    
+     #echo "tiene la cadena "; 
+     if [[ "$rescat" == *"#"* ]]; then
+       #echo "esta comentado";
+   	let contFinal=contFinal+1
+     else
+   	#echo "no esta comentada"; 
+   	if [[ "$rescat" == *"Prod"* ]]; then
+           #echo "esta bien configurado";
+   		let contAux=0; 
+       else
+   		#echo "esta mal configurado"; 
+   		let contFinal=contFinal+1 
+       fi
+     fi 
+   else
+     #echo "no tiene la cadena falta agregarla con los valores"; 
+     let contFinal=contFinal+1 
+   fi
+   
+   #echo "contador "$contFinal
+   
+   if [[ "$contFinal" > 0 ]]; then    
+     #echo "FALLO"; 
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "PASO";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod8_2(){
+   echo -e "\n\n\n 8.2 Ensure ServerSignature Is Not Enabled"
+   echo    "===================================================="
+   ((++total))
+
+   busqueda='ServerSignature'
+   contador=$(grep -i -c "$busqueda" "$dirConf")
+   rescat=$(cat "$dirConf" | grep -i "$busqueda")
+   
+   contFinal=0
+   contAux=0
+   
+   if [[ "$contador" > 0 ]]; then    
+     #echo "tiene la cadena "; 
+     if [[ "$rescat" == *"#"* ]]; then
+       #echo "esta comentado";
+   	let contAux=0; 
+     else
+   	#echo "no esta comentada"; 
+   	if [[ "$rescat" == *"off"* ]] || [[ "$rescat" == *"Off"* ]] || [[ "$rescat" == *"OFF"* ]]; then
+           #echo "esta deshabilitado";
+   		let contAux=0; 
+       else
+   		#echo "esta habilitado - mal"; 
+   		let contFinal=contFinal+1 
+       fi
+     fi 
+   fi
+   
+   # we captured output of the subshell, let's interpret it
+   if [[ "$contFinal" > 0 ]]; then    
+     #echo "FALLO"; 
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "PASO";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod8_3(){
+   echo -e "\n\n\n 8.3 Ensure All Default Apache Content Is Removed"
+   echo    "=========================================================="
+   ((++total))
+
+   busqueda='Include conf/extra/httpd-autoindex.conf'
+   busqueda2='Alias /icons/'
+   contador=$(grep -i -c "$busqueda" "$dirConf")
+   contador2=$(grep -i -c "$busqueda2" "$dirConf")
+   rescat=$(cat "$dirConf" | grep -i "$busqueda")
+   rescat2=$(cat "$dirConf" | grep -i "$busqueda2")
+   
+   contFinal=0
+   contAux=0
+   
+   if [[ "$contador" > 0 ]]; then    
+     #echo "tiene la cadena "; 
+     if [[ "$rescat" == *"#"* ]]; then
+       #echo "esta comentado no hace nada";
+   	let contAux=0; 
+     else
+   	#echo "no esta comentado"; 
+   	let contFinal=contFinal+1 
+     fi 
+   fi
+   
+   if [[ "$contador2" > 0 ]]; then    
+     #echo "tiene la cadena "; 
+     if [[ "$rescat2" == *"#"* ]]; then
+       #echo "esta comentado no hace nada";
+   	let contAux=0; 
+     else
+   	#echo "no esta comentado"; 
+   	let contFinal=contFinal+1 
+     fi 
+   fi
+   
+   # we captured output of the subshell, let's interpret it
+   if [[ "$contFinal" > 0 ]]; then    
+     #echo "FALLO"; 
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "PASO";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod8_4(){
+   echo -e "\n\n\n 8.4 Ensure ETag Response Header Fields Do Not Include Inodes"
+   echo    "========================================================================"
+   ((++total))
+
+   busqueda='FileETag'
+   contador=$(grep -i -c "$busqueda" "$dirConf")
+   rescat=$(cat "$dirConf" | grep -i "$busqueda")
+   
+   contFinal=0
+   contAux=0
+   
+   if [[ "$contador" > 0 ]]; then    
+     #echo "tiene la cadena "; 
+     if [[ "$rescat" == *"#"* ]]; then
+      #echo "esta comentado";
+   	let contFinal=contFinal+1 
+     else
+   	#echo "no esta comentada"; 
+   	if [[ "$rescat" == *"None"* ]] || [[ "$rescat" == *"MTime Size"* ]] || [[ "$rescat" == *""* ]]; then
+           #echo "esta deshabilitado";
+   		let contFinal=0; 
+       else
+   		#echo "esta habilitado - mal"; 
+   		#echo $rescat		
+   	let contFinal=contFinal+1 
+       fi
+     fi 
+   fi
+   
+   if [[ "$contFinal" > 0 ]]; then    
+     #echo "FALLO"; 
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "PASO";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
 
 ##### MODULO 9
+function Mod9_1(){
+   echo -e "\n\n\n 9.1 Ensure the TimeOut Is Set to 10 or Less"
+   echo    "======================================================="
+   ((++total))
+
+   busqueda='TimeOut'
+   cadena=$(cat "$dirConf" | grep -i "$busqueda")
+   cuenta=$(grep -i -c "$busqueda" "$dirConf")
+   
+   contFinal=0
+   #echo $cadena
+   contAux=$(echo "$cadena" | tr -dc '0-9')
+   num=$(echo "$contAux" | bc)
+   
+   if [[ "$cuenta" > 0 ]]; then
+          # echo "Tiene la cadena ";
+     if [[ "$cadena" == *"#"* ]]; then
+         # echo "Esta comentado, no hace nada";
+          contFinal=contFinal+1;
+     else
+         	#echo "No esta comentado";
+        if [ "$num" -ge 11 ]; then
+        #echo "Es mayor";
+         contFinal=contFinal+1;
+   		else
+   		#echo "Es menor o igual a 10"
+   		let contFinal=0;
+         fi
+     fi
+      else
+          #echo "No existe en el archivo";
+           let contFinal=contFinal+1;
+   fi
+   
+   if [[ "$contFinal" > 0 ]]; then    
+     #echo "FALLO"; 
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "PASO";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod9_2(){
+   echo -e "\n\n\n 9.2 Ensure KeepAlive Is Enabled"
+   echo    "=========================================="
+   ((++total))
+
+   output=$(grep -i "^\s*KeepAlive On" "$dirConf" | awk '{print $2}')
+   
+   # we captured output of the subshell, let's interpret it
+   if [ "$output" != "On" ] ; then
+       # print the reason why we are failing
+       #echo "No cumple"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+       #echo "Cumple"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod9_3(){
+   echo -e "\n\n\n 9.3 Ensure MaxKeepAliveRequests is Set to a Value of 100 or Greater"
+   echo    "=============================================================================="
+   ((++total))
+
+   busqueda='MaxKeepAliveRequests'
+   cadena=$(cat "$dirConf" | grep -i "$busqueda")
+   cuenta=$(grep -i -c "$busqueda" "$dirConf")
+   
+   contFinal=0
+   contAux=$(echo "$cadena" | tr -dc '0-9')
+   num=$(echo "$contAux" | bc)
+   
+   if [[ "$cuenta" > 0 ]]; then
+          # echo "Tiene la cadena ";
+     if [[ "$cadena" == *"#"* ]]; then
+         # echo "Esta comentado, no hace nada";
+          contFinal=contFinal+1;
+     else
+        #echo "No esta comentado";
+        if [ "$num" -ge 100 ]; then
+        #echo "Es mayor";
+         contFinal=0;
+                   else
+                   #echo "Es menor o igual a 100"
+                   let contFinal=contFinal+1;
+         fi
+     fi
+      else
+          #echo "No existe en el archivo";
+           let contFinal=contFinal+1;
+   fi
+   
+   if [[ "$contFinal" > 0 ]]; then
+     #echo "No cumple";
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "Cumple";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod9_4(){
+   echo -e "\n\n\n 9.4 Ensure KeepAliveTimeout is Set to a Value of 15 or Less"
+   echo    "====================================================================="
+   ((++total))
+
+   busqueda='KeepAliveTimeout'
+   cadena=$(cat "$dirConf" | grep -i "$busqueda")
+   cuenta=$(grep -i -c "$busqueda" "$dirConf")
+   
+   contFinal=0
+   contAux=$(echo "$cadena" | tr -dc '0-9')
+   num=$(echo "$contAux" | bc)
+   
+   if [[ "$cuenta" > 0 ]]; then
+          # echo "Tiene la cadena ";
+     if [[ "$cadena" == *"#"* ]]; then
+         # echo "Esta comentado, no hace nada";
+          contFinal=contFinal+1;
+     else
+         	#echo "No esta comentado";
+        if [ "$num" -ge 16 ]; then
+        #echo "Es mayor";
+         contFinal=contFinal+1;
+                   else
+                   #echo "Es menor o igual a 10"
+                   let contFinal=0;
+         fi
+     fi
+      else
+          #echo "No existe en el archivo";
+           let contFinal=contFinal+1;
+   fi
+   
+   if [[ "$contFinal" > 0 ]]; then
+     #echo "No cumple";
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "Cumple";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod9_5(){
+   echo -e "\n\n\n 9.5 Ensure the Timeout Limits for Request Headers is Set to 40 or Less"
+   echo    "================================================================================="
+   ((++total))
+
+   variable="$(httpd -M |grep reqtimeout || apachectl -M | grep reqtimeout)"
+   output="$($variable |wc -l)"
+   output2=$(grep -i "^\s*RequestReadTimeout" "$dirConf" | cut -d'=' -f 2 | cut -c 1,2,3,4,5)
+   
+   
+   if [ "$output" > 0 ] && [ "$output2" > 0 ]; then
+     if [ "$output" == *"#"* ] || [ "$output2" == *"#"* ]; then
+          #echo "Esta comentado, no hace nada";
+          let contFinal=contFinal+1
+     else
+         	#echo "No esta comentado";
+        if [ "$output2" != "20-40" ]; then
+           #echo "No es igual, no cumple";
+           let contFinal=contFinal+1
+          else
+           #echo "Es menor o igual a 40"
+           let contFinal=0
+         fi
+     fi
+      else
+         # echo "No existe en el archivo";
+           let contFinal=contFinal+1
+   fi
+   
+   #echo $contFinal "antes del if";
+   
+   if [[ "$output" == "1" ]] && [[ "$contFinal" == 0 ]]; then
+    #echo "Cumple";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))   
+   else
+     #echo "No cumple";
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+function Mod9_6(){
+   echo -e "\n\n\n 9.6 Ensure Timeout Limits for the Request Body is Set to 20 or Less"
+   echo    "==============================================================================="
+   ((++total))
+
+   variable="$(httpd -M |grep reqtimeout || apachectl -M | grep reqtimeout)"
+   if [ "$variable" = "$no_existe" ] ; then
+      output=0
+   else
+      output=1
+   fi
+ 
+   #output="$($variable |wc -l)"
+   output2=$(grep -i "^\s*RequestReadTimeout" "$dirConf" | cut -d',' -f 2 | cut -d'=' -f 3)
+   
+   
+   if [ "$output" > 0 ] && [ "$output2" > 0 ]; then
+     if [ "$output" == *"#"* ] || [ "$output2" == *"#"* ]; then
+          #echo "Esta comentado, no hace nada";
+          let contFinal=contFinal+1
+     else
+        #echo "No esta comentado";
+        if [ "$output2" $gt 20  ]; then
+           #echo "No es igual, no cumple";
+           let contFinal=contFinal+1
+          else
+           #echo "Es menor o igual a 20"
+           let contFinal=0
+         fi
+     fi
+      else
+         # echo "No existe en el archivo";
+           let contFinal=contFinal+1
+   fi
+   
+   #echo $contFinal "antes del if";
+   
+   if [[ "$output" == "1" ]] && [[ "$contFinal" == 0 ]]; then
+    #echo "Cumple";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   
+   else
+     	#echo "No cumple";
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
 
 ##### MODULO 10
+function Mod10_1(){
+   echo -e "\n\n\n 10.1 Ensure the LimitRequestLine directive is Set to 512 or less"
+   echo    "=========================================================================="
+   ((++total))
+
+   busqueda='LimitRequestline'
+   cadena=$(cat "$dirConf" | grep "$busqueda")
+   cuenta=$(grep -c "$busqueda" "$dirConf")
+   
+   contFinal=0
+   contAux=$(echo "$cadena" | tr -dc '0-9')
+   num=$(echo "$contAux" | bc)
+   
+   if [[ "$cuenta" > 0 ]]; then
+     # echo "Tiene la cadena ";
+     if [[ "$cadena" == *"#"* ]]; then
+        # echo "Esta comentado, no hace nada";
+        contFinal=contFinal+1;
+     else
+        #echo "No esta comentado";
+        if [ "$num" -ge 513 ]; then
+           #echo "Es mayor";
+           contFinal=contFinal+1;
+        else
+           #echo "Es menor o igual a 512"
+           let contFinal=0;
+        fi
+     fi
+   else
+      #echo "No existe en el archivo";
+      let contFinal=contFinal+1;
+   fi
+   
+   # we captured output of the subshell, let's interpret it
+   if [[ "$contFinal" > 0 ]]; then
+     #echo "No cumple";
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "Cumple";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod10_2(){
+   echo -e "\n\n\n 10.2 Ensure the LimitRequestFields Directive is Set to 100 or Less"
+   echo    "==========================================================================="
+   ((++total))
+
+   busqueda='LimitRequestFields'
+   cadena=$(cat "$dirConf" | grep -i "$busqueda")
+   cuenta=$(grep -i -c "$busqueda" "$dirConf")
+   
+   contFinal=0
+   contAux=$(echo "$cadena" | tr -dc '0-9')
+   num=$(echo "$contAux" | bc)
+   #echo $cadena
+   
+   if [[ "$cuenta" > 0 ]]; then
+          # echo "Tiene la cadena ";
+     if [[ "$cadena" == *"#"* ]]; then
+         # echo "Esta comentado, no hace nada";
+          contFinal=contFinal+1;
+     else
+         	#echo "No esta comentado";
+        if [ "$num" -ge 101 ]; then
+        #echo "Es mayor";
+         contFinal=contFinal+1;
+        else
+        #echo "Es menor o igual a 100"
+        let contFinal=0;
+         fi
+     fi
+      else
+          #echo "No existe en el archivo";
+           let contFinal=contFinal+1;
+   fi
+   
+   if [[ "$contFinal" > 0 ]]; then
+     #echo "No cumple";
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "Cumple";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod10_3(){
+   echo -e "\n\n\n 10.3 Ensure the LimitRequestFieldsize Directive is Set to 1024 or Less"
+   echo    "===================================================================================="
+   ((++total))
+
+   busqueda='LimitRequestFieldsize'
+   cadena=$(cat "$dirConf" | grep -i "$busqueda")
+   cuenta=$(grep -i -c "$busqueda" "$dirConf")
+   #echo $cadena
+   contFinal=0
+   contAux=$(echo "$cadena" | tr -dc '0-9')
+   num=$(echo "$contAux" | bc)
+   
+   if [[ "$cuenta" > 0 ]]; then
+          # echo "Tiene la cadena ";
+     if [[ "$cadena" == *"#"* ]]; then
+         # echo "Esta comentado, no hace nada";
+          contFinal=contFinal+1;
+     else
+         	#echo "No esta comentado";
+        if [ "$num" -ge 1025 ]; then
+        #echo "Es mayor";
+         contFinal=contFinal+1;
+                   else
+                   #echo "Es menor o igual a 1024"
+                   let contFinal=0;
+         fi
+     fi
+      else
+          #echo "No existe en el archivo";
+           let contFinal=contFinal+1;
+   fi
+   
+   if [[ "$contFinal" > 0 ]]; then
+     #echo "No cumple";
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "Cumple";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
+
+function Mod10_4(){
+   echo -e "\n\n\n 10.4 Ensure the LimitRequestBody Directive is Set to 102400 or Less"
+   echo    "============================================================================="
+   ((++total))
+
+   busqueda='LimitRequestBody'
+   cadena=$(cat "$dirConf" | grep -i "$busqueda")
+   cuenta=$(grep -i -c "$busqueda" "$dirConf")
+   echo $cadena
+   contFinal=0
+   contAux=$(echo "$cadena" | tr -dc '0-9')
+   num=$(echo "$contAux" | bc)
+   
+   if [[ "$cuenta" > 0 ]]; then
+          # echo "Tiene la cadena ";
+     if [[ "$cadena" == *"#"* ]]; then
+         # echo "Esta comentado, no hace nada";
+          contFinal=contFinal+1;
+     else
+         	#echo "No esta comentado";
+        if [ "$num" -ge 102401 ]; then
+        #echo "Es mayor";
+         contFinal=contFinal+1;
+        else
+        #echo "Es menor o igual a 102400"
+        let contFinal=0;
+         fi
+     fi
+      else
+          #echo "No existe en el archivo";
+           let contFinal=contFinal+1;
+   fi
+   
+   if [[ "$contFinal" > 0 ]]; then
+     #echo "No cumple";
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   else
+     #echo "Cumple";
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   fi
+}
 
 ##### MODULO 11
+function Mod11_1(){
+   echo -e "\n\n\n 11.1 Ensure SELinux Is Enabled in Enforcing Mode"
+   echo    "=========================================================="
+   ((++total))
+
+   output=$(sestatus | grep -i mode)
+   cuenta=$(sestatus | grep -i -c "mode")
+   
+   #echo $cuenta
+   #echo $output
+   
+   # we captured output of the subshell, let's interpret it
+   if [ "$cuenta" -eq 2 ]; then
+   #    echo "Cumple"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   else
+   #    echo "No Cumple"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+function Mod11_2(){
+   echo -e "\n\n\n 11.2 Ensure Apache Processes Run in the httpd_t Confined Context"
+   echo    "=========================================================================="
+   ((++total))
+
+   output=$(ps -eZ | grep -i httpd)
+   cuenta=$(ps -eZ | grep -i -c "httpd")
+   
+   # we captured output of the subshell, let's interpret it
+   if [[ "$output" == *"httpd_t"* ]] ; then
+   #    echo "Cumple"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+       
+   else
+   #    echo "No cumple"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+function Mod11_3(){
+   echo -e "\n\n\n 11.3 Ensure the httpd_t Type is Not in Permissive Mode"
+   echo    "================================================================"
+   ((++total))
+
+   output=$(semodule -l | grep -i permissive_httpd_t)
+   
+   #echo $output
+   # we captured output of the subshell, let's interpret it
+   if [ "$output" == "" ] ; then
+   #    echo "Cumple"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+   else
+   #    echo "No Cumple"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
 
 ##### MODULO 12
+function Mod12_1(){
+   echo -e "\n\n\n 12.1 Ensure the AppArmor Framework Is Enabled"
+   echo    "======================================================="
+   ((++total))
+
+   output=$(aa-status --enabled && echo Enabled)
+   
+   echo $output
+   # we captured output of the subshell, let's interpret it
+   if [ "$output" == "Enabled" ] ; then
+   #    echo "Cumple"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+       
+   else
+   #    echo "No Cumple"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
+
+function Mod12_3(){
+   echo -e "\n\n\n 12.3 Ensure Apache AppArmor Profile is in Enforce Mode"
+   echo    "================================================================"
+   ((++total))
+
+   output=$(aa-unconfined --paranoid | grep -i apache2)
+   
+   #echo $output
+   # we captured output of the subshell, let's interpret it
+   if [ "$output" == *"enforce"* ] && [ "$output" == *"confined by"* ] ; then
+   #    echo "Cumple"
+       echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
+       ((++pass))
+       
+   else
+   #    echo "No Cumple"
+       echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
+       ((++fail))
+   fi
+}
 
 
 function calificacion(){
@@ -1801,18 +2500,37 @@ function main(){
 
    # MODULO 8
    #++++++++++
+   Mod8_1
+   Mod8_2
+   Mod8_3
+   Mod8_4
 
    # MODULO 9
    #++++++++++
+   Mod9_1
+   Mod9_2
+   Mod9_3
+   Mod9_4
+   Mod9_5
+   Mod9_6
 
    # MODULO 10
    #++++++++++
+   Mod10_1
+   Mod10_2
+   Mod10_3
+   Mod10_4
 
    # MODULO 11
    #++++++++++
+   Mod11_1
+   Mod11_2
+   Mod11_3
 
    # MODULO 12
    #++++++++++
+   Mod12_1
+   Mod12_3
 
    calificacion
    
