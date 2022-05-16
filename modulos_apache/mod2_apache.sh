@@ -4,7 +4,7 @@
 # DSI-CSA                                                                                
 # Script para evaluación de Apache Httpd V1.0
 # MODULO 2
-# Fecha: 9/02/2022
+# Fecha: 9/05/2022
 # CSA: Maribel Hernandez Gtz
 ####################################################
 
@@ -91,7 +91,7 @@ function Mod2_4(){
    fi
 
    # JSON ---------------------
-   sal_24=$(jo id="2.4 Ensure the Status Module Is Disabled" Descripcion="The Apache `mod_status` module provides current server performance statistics." Como_cumplirlo="If the modules are correctly disabled, there will be no output when executing the above command.  # httpd -M | egrep 'status_module'" evidencia="$variable" estado="$resultado")
+   sal_24=$(jo id="2.4 Ensure the Status Module Is Disabled" descripcion="The Apache `mod_status` module provides current server performance statistics." como_cumplirlo="If the modules are correctly disabled, there will be no output when executing the above command.  # httpd -M | egrep 'status_module'" evidencia="$variable" estado="$resultado")
    #echo -e "\n \n $sal_24"
 }
 
@@ -117,7 +117,7 @@ function Mod2_5(){
    fi
 
    # JSON ---------------------------
-   sal_25=$(jo id="2.5 Ensure the Autoindex Module Is Disabled" Descripcion="The Apache `autoindex` module automatically generates web page listing the contents of directories on the server, typically used so that an `index.html` does not have to be generated." Como_cumplirlo="If the module is correctly disabled, there will be no output when executing the above command. # httpd -M | grep autoindex_module" evidencia="$variable" estado="$resultado")
+   sal_25=$(jo id="2.5 Ensure the Autoindex Module Is Disabled" descripcion="The Apache `autoindex` module automatically generates web page listing the contents of directories on the server, typically used so that an `index.html` does not have to be generated." como_cumplirlo="If the module is correctly disabled, there will be no output when executing the above command. # httpd -M | grep autoindex_module" evidencia="$variable" estado="$resultado")
    #echo -e "\n \n $sal_25"
 }
 
@@ -144,7 +144,7 @@ function Mod2_6(){
    fi
 
    # JSON ---------------------------
-   sal_26=$(jo id="2.6 Ensure the Proxy Modules Are Disabled" Descripcion="The Apache proxy modules allow the server to act as a proxy (either forward or reverse proxy) of HTTP and other protocols with additional proxy modules loaded. If the Apache installation is not intended to proxy requests to or from another network then the proxy module should not be loaded." Como_cumplirlo="If the modules are correctly disabled, there will be no output when executing the above command. # httpd -M | grep proxy_" evidencia="$evidencia" estado="$resultado")
+   sal_26=$(jo id="2.6 Ensure the Proxy Modules Are Disabled" descripcion="The Apache proxy modules allow the server to act as a proxy (either forward or reverse proxy) of HTTP and other protocols with additional proxy modules loaded. If the Apache installation is not intended to proxy requests to or from another network then the proxy module should not be loaded." como_cumplirlo="If the modules are correctly disabled, there will be no output when executing the above command. # httpd -M | grep proxy_" evidencia="$evidencia" estado="$resultado")
    #echo -e "\n \n $sal_26"
 }
 
@@ -170,7 +170,7 @@ function Mod2_7(){
    fi
 
    # JSON ---------------------------
-   sal_27=$(jo id="2.7 Ensure the User Directories Module Is Disabled" Descripcion="The UserDir directive must be disabled so that user home directories are not accessed via the web site with a tilde (~) preceding the username. The directive also sets the path name of the directory that will be accessed." Como_cumplirlo=" If the modules are correctly disabled, there will be no output when executing the above command. # httpd -M | grep userdir_" evidencia="$variable" estado="$resultado")
+   sal_27=$(jo id="2.7 Ensure the User Directories Module Is Disabled" descripcion="The UserDir directive must be disabled so that user home directories are not accessed via the web site with a tilde (~) preceding the username. The directive also sets the path name of the directory that will be accessed." como_cumplirlo=" If the modules are correctly disabled, there will be no output when executing the above command. # httpd -M | grep userdir_" evidencia="$variable" estado="$resultado")
    #echo -e "\n \n $sal_27"
 }
 
@@ -196,7 +196,7 @@ function Mod2_8(){
    fi
 
    # JSON ---------------------------
-   sal_28=$(jo id="2.8 Ensure the Info Module Is Disabled" Descripcion="The Apache mod_info module provides information on the server configuration via access to a /server-info URL location." Como_cumplirlo="If the module is correctly disabled, there will be no output when executing the above command. # httpd -M | egrep 'info_module'" evidencia="$variable" estado="$resultado")
+   sal_28=$(jo id="2.8 Ensure the Info Module Is Disabled" descripcion="The Apache mod_info module provides information on the server configuration via access to a /server-info URL location." como_cumplirlo="If the module is correctly disabled, there will be no output when executing the above command. # httpd -M | egrep 'info_module'" evidencia="$variable" estado="$resultado")
    #echo -e "\n \n $sal_28"
 }
 
@@ -223,7 +223,7 @@ function Mod2_9(){
    fi
 
    # JSON ---------------------------
-   sal_29=$(jo id="2.9 Ensure the Basic and Digest Authentication Modules are Disabled" Descripcion="The Apache mod_auth_basic and mod_auth_digest modules support HTTP Basic Authentication and HTTP Digest Authentication respectively. The two authentication protocols are used to restrict access to users who provide a valid user name and password." Como_cumplirlo="If the modules are correctly disabled, there will be no output when executing either of the above commands. # httpd -M | grep auth_basic_module    # httpd -M | grep auth_digest_module" evidencia="$variable $variable2" estado="$resultado")
+   sal_29=$(jo id="2.9 Ensure the Basic and Digest Authentication Modules are Disabled" descripcion="The Apache mod_auth_basic and mod_auth_digest modules support HTTP Basic Authentication and HTTP Digest Authentication respectively. The two authentication protocols are used to restrict access to users who provide a valid user name and password." como_cumplirlo="If the modules are correctly disabled, there will be no output when executing either of the above commands. # httpd -M | grep auth_basic_module    # httpd -M | grep auth_digest_module" evidencia="$variable $variable2" estado="$resultado")
    #echo -e "\n \n $sal_29"
 }
 
