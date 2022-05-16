@@ -143,14 +143,18 @@ function calificacion(){
 }
 
 function main(){
+   # ---- Invocacion de los módulos 
    echo -e "==> using source…\n"
+   # -- MODULO 2
    . $dirEjecucion"/mod2_apache.sh"
 
-
+   # --- Generacion JSON SALIDA  ----------------
    tipo="\"Resultado_de_revision\""
    output="{\"tipo\": $tipo",
    output="$output \"resultados\":[ $sal_mod2 ] }"
    echo $output >> "$dirEjecucion/salida_apache.json"
+   # --------------------------------------------
+
 
    #output=$(tipo=$tipo)
    informacion_escaneo=$(getInformacion_escaneo)
@@ -164,10 +168,5 @@ function main(){
 
 main
 
-
-# TOTALES
-#echo -e "\n\n\n\n"
-#echo "PASS ----- ["$pass"]"
-#echo "FAIL ----- ["$fail"]"
-#echo "TOTAL -----["$total"]"
+# --- FIN SCRIPT 
 
