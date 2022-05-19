@@ -27,6 +27,14 @@ declare total=0
 no_existe=""
 non_rootUser="false"
 
+confDirectorio=""
+APACHE_PREFIX=""
+usuario=""
+grupo=""
+fileError=""
+errorDir=""
+dirError=""
+
 echo -e "\n\n\n\nEquipo: " $hostname
 echo "Fecha: " $fecha
 echo "=================================="
@@ -36,6 +44,7 @@ dirEjecucion="$(cd "$(dirname "$0")"; pwd)"
 # -- Borramos el archivo salida_apache.json -----
 echo -e "Borrando archivo "$dirEjecucion/salida_apache.json" \n \n"
 rm -f "$dirEjecucion/salida_apache.json"
+# ----------------------------------------------
 
 
 # -- Exportar directorio JO -----------------------------------
@@ -44,7 +53,7 @@ export PATH="$dirJO:$PATH"
 source ~/.bashrc
 #--------------------------------------------------------------
 
-# -- Configuracion Apache -------------------------------------
+# -- Variables Configuracion Apache -------------------------------------
 dirConf=$(ps -ef | grep httpd | grep -oE '/.*conf.*conf'| cut -d ' ' -f3| awk '{print $1}'| uniq)
 #Validar si se encuentra ejecutandose apache en rhel o no se tiene variables globales
 if [ -z "$dirConf" -a "$dirConf" != " " ]; then
@@ -57,9 +66,10 @@ APACHE_PREFIX=${confDirectorio%?????}
 usuario=$(grep -i '^User' "$dirConf"| awk {'print $2'})
 grupo=$(grep -i '^Group' "$dirConf"| awk {'print $2'})
 
-fileError=$(httpd -V|grep 'ERRORLOG' | cut -d'=' -f 2|sed "s/\"//g")%/*
+  # -- Directorio de LOGS
+fileError=$(httpd -V|grep 'ERRORLOG' | cut -d'=' -f 2|sed "s/\"//g")
 errorDir=${fileError%/*}
-dirError=$APACHE_PREFIX$errorDir
+dirLogs=$APACHE_PREFIX/$errorDir
 # -------------------------------------------------------------
 
 echo -e "\n\nArchivo de configuración: $dirConf"
@@ -144,14 +154,16 @@ function calificacion(){
 
 function main(){
    # ---- Invocacion de los módulos 
-   echo -e "==> using source…\n"
    # -- MODULO 2
    . $dirEjecucion"/mod2_apache.sh"
+   . $dirEjecucion"/mod3_apache.sh"
+
+   
 
    # --- Generacion JSON SALIDA  ----------------
    tipo="\"Resultado_de_revision\""
    output="{\"tipo\": $tipo",
-   output="$output \"resultados\":[ $sal_mod2 ] }"
+   output="$output \"resultados\":[ $sal_mod2, $sal_mod3 ] }"
    echo $output >> "$dirEjecucion/salida_apache.json"
    # --------------------------------------------
 
