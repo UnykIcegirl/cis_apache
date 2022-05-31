@@ -97,7 +97,7 @@ echo -e "\n \n Instancias activas:" | tee  instancias_apache_$(hostname)_${fecha
 ps -fea | grep -ie httpd | grep -oE  "\-f /.*conf.*.conf " | cut -d ' ' -f2 | awk '{print $1}'| uniq | tee instancias_activas.txt
 echo ""
 
-# ----- INFORMACION SISTEMA ------------------------------
+# ----- INFORMACION SISTEMA Y ESCANEO   ------------------------------
   function getInformacion_escaneo() {
     fecha_escaneo=$(/bin/date +'%d-%m-%Y - %T')
     usuario_ejecutor=$(whoami)
@@ -164,8 +164,35 @@ function calificacion(){
 }
 
 # --- Funciones para las evidencias de resultados
-myfun() {
-    echo "Hello!"
+function getResultadoEvidencia() {
+    #Valor 1 Exitosa
+    #Valor 2 se espera que tenga una salida vacia o nula
+    arg1=$1
+    #Salida del comando
+    arg2=$2
+    #arg3=$3
+
+    local cadenaRes
+    #Configuracion Correcta
+    if [ "$arg1" = 1 ] ; then
+       if [ "$arg2" != no_existe ] ; then
+           cadenaRes="Configuración existente correcta, la salida existente es ==> $arg2."
+       else
+           cadenaRes="Configuración existente correcta, no se encontro valor/etiqueta."
+       fi       
+    fi
+
+    #Falta configuracion
+    if [ "$arg1" = 2 ] ; then
+       if [ "$arg2" != no_existe ] ; then
+           cadenaRes="Falta realizar la configuración, actualmente existe ==> $arg2."
+       else
+           cadenaRes="Falta realizar configuración ya que no se encontro valor/etiqueta, la salida existente es ==> $arg2."
+       fi
+    fi
+
+    echo "$cadenaRes"
+
 }
 
 export -f myfun
@@ -179,6 +206,7 @@ function main(){
    #. $dirEjecucion"/mod3_apache.sh"
    . $dirEjecucion"/mod4_apache.sh"
    #. $dirEjecucion"/mod5_apache.sh"
+   #. $dirEjecucion"/mod6_apache.sh"
 
 
    # --- Generacion JSON SALIDA  ----------------

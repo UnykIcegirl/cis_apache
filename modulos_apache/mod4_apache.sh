@@ -1,4 +1,8 @@
+#!/bin/bash
+
 #!/bin/sh
+
+#source $dirEjecucion"/libraryFunctions.sh"
 
 #####################################################
 # DSI-CSA                                                                                
@@ -39,7 +43,10 @@ function Mod4_1(){
    fi
 
    # JSON ---------------------------
-   sal_41=$(jo id="4.1 Ensure Access to OS Root Directory Is Denied By Default" descripcion="The Apache Directory directive allows for directory specific configuration of access controls and many other features and options. One important usage is to create a default deny policy that does not allow access to operating system directories and files, except for those specifically allowed. This is done by denying access to the OS root directory." como_cumplirlo="One aspect of Apache, which is occasionally misunderstood, is the feature of default access. That is, unless you take steps to change it, if the server can find its way to a file through normal URL mapping rules, it can and will serve it to clients. Having a default deny is a predominate security principle, and then helps prevent the unintended access, and we do that in this case by denying access to the OS root directory using either of two methods but not both: 1. Using the Apache Deny directive along with an Order directive. 2. Using the Apache Require directive." evidencia="$(perl -ne 'print if /^ *<Directory *\//i .. /<\/Directory/i' $dirConf |grep "Require all denied")" estado="$resultado")
+   #evidencias/comandos
+   cmd1=$(perl -ne 'print if /^ *<Directory *\//i .. /<\/Directory/i' $dirConf |grep "Require all denied")
+   
+   sal_41=$(jo id="4.1 Ensure Access to OS Root Directory Is Denied By Default" descripcion="The Apache Directory directive allows for directory specific configuration of access controls and many other features and options. One important usage is to create a default deny policy that does not allow access to operating system directories and files, except for those specifically allowed. This is done by denying access to the OS root directory." como_cumplirlo="One aspect of Apache, which is occasionally misunderstood, is the feature of default access. That is, unless you take steps to change it, if the server can find its way to a file through normal URL mapping rules, it can and will serve it to clients. Having a default deny is a predominate security principle, and then helps prevent the unintended access, and we do that in this case by denying access to the OS root directory using either of two methods but not both: 1. Using the Apache Deny directive along with an Order directive. 2. Using the Apache Require directive." evidencia="$(getResultadoEvidencia "1" "$cmd1")" estado="$resultado")
    #echo -e "\n \n $sal_41"
 }
 
