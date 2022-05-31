@@ -164,31 +164,35 @@ function calificacion(){
 }
 
 # --- Funciones para las evidencias de resultados
-function getResultadoEvidencia() {
-    #Valor 1 Exitosa
-    #Valor 2 se espera que tenga una salida vacia o nula
+function getEvidencia() {
+    #Valor 1 Se espera que tenga un VALOR
+    #Valor 2 se espera que tenga una salida vacia o NULL
     arg1=$1
     #Salida del comando
     arg2=$2
     #arg3=$3
 
     local cadenaRes
-    #Configuracion Correcta
+    #Configuracion, se espera un valor como exitoso
     if [ "$arg1" = 1 ] ; then
-       if [ "$arg2" != no_existe ] ; then
-           cadenaRes="Configuración existente correcta, la salida existente es ==> $arg2."
-       else
-           cadenaRes="Configuración existente correcta, no se encontro valor/etiqueta."
-       fi       
+        if [ -z "$arg2" ]; then 
+            #echo "NULL"; 
+            cadenaRes="Falta realizar configuración ya que no se encontro valor/etiqueta"
+        else 
+            #echo "Not NULL";
+            cadenaRes="Configuración existente correcta, la salida existente es ==> $arg2."
+        fi
     fi
 
-    #Falta configuracion
+    #Configuracion, se espera un valor NULL como exitoso
     if [ "$arg1" = 2 ] ; then
-       if [ "$arg2" != no_existe ] ; then
-           cadenaRes="Falta realizar la configuración, actualmente existe ==> $arg2."
-       else
-           cadenaRes="Falta realizar configuración ya que no se encontro valor/etiqueta, la salida existente es ==> $arg2."
-       fi
+        if [ -z "$arg2" ]; then 
+            #echo "NULL"; 
+            cadenaRes="Configuración existente correcta, no se encontro valor/etiqueta."
+        else 
+            #echo "Not NULL";
+            cadenaRes="Falta realizar configuración actualmente existe el valor ==> $arg2."
+        fi
     fi
 
     echo "$cadenaRes"
@@ -196,9 +200,10 @@ function getResultadoEvidencia() {
 }
 
 export -f myfun
-
 # ------------------------------------------------
 
+
+# ---  MAIN ----------------------
 function main(){
    # ---- Invocacion de los módulos 
    # -- MODULOS
