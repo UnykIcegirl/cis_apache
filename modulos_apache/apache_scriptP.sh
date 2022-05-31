@@ -1,4 +1,5 @@
-#/bin/bash
+#!/bin/bash
+
 #!/bin/sh
 
 
@@ -97,40 +98,48 @@ ps -fea | grep -ie httpd | grep -oE  "\-f /.*conf.*.conf " | cut -d ' ' -f2 | aw
 echo ""
 
 # ----- INFORMACION SISTEMA ------------------------------
-  getInformacion_escaneo() {
-    fecha_escaneo=$(/bin/date +%D' - '%T)
+  function getInformacion_escaneo() {
+    fecha_escaneo=$(/bin/date +'%d-%m-%Y - %T')
     usuario_ejecutor=$(whoami)
     version_script="1.0"
     tipo_de_servidor="WEB"
     tecnologia="Apache HTTP Server"
     version_tecnologia=["'2.4.53'","'2'"]
               
+    # JSON ---------------------------
+    local informacion_escaneo=$(jo fecha_escaneo="$fecha_escaneo" usuario_ejecutor="$usuario_ejecutor" version_script=1.0  tipo_de_servidor="WEB" tecnologia="Apache HTTP Server" version_tecnologica[]='2.2' version_tecnologica[]='2.4')
+    echo "$informacion_escaneo"
 
-    local informacion_escaneo="{$informacion_escaneo 'fecha_escaneo':'$fecha_escaneo', 'usuario_ejecutor':'$usuario_ejecutor','version_script':'$version_script','tipo_de_servidor':'$tipo_de_servidor','tecnologia':'$tecnologia','version_tecnologia':$version_tecnologia"}              
-    echo $informacion_escaneo  
   }
               
 
-  getNetInterfaces() {
+  function getNetInterfaces() {
     IFS=$ class="hljs-string">'\n'
     mapfile -t lines < <(ip -o -4 addr show)
     array=()
+
     for i in ${lines[@]}; do
-       echo "aaaaaai $i"
        nombre=$(echo $i | awk  '{print $2}')
        ip=$(echo $i | awk  '{print $4}' | cut -d\/ -f1)
        broadcast=$(echo $i | awk  '{print $6}')
-       salida="{'nombre':'$nombre','ip_address':'$ip','netmask':'','broadcast':'$broadcast'}"
-       array=("${array[@]}" $salida)
+       pruebaSal=$(jo "nombre"="$nombre" "ip_address"="$ip" "netmask"=" " "broadcast"="$broadcast")
+       array=("${array[@]}" $pruebaSal)
     done
-                  
+
+    cadena=""
     for i in ${array[@]}; do
-       echo "$i,"
+       cadena="$cadena $i,"
     done
+
+    #quitamos la ultima coma
+    len=${#cadena}
+    interfaces=${cadena::len-1}
+    echo "$interfaces"
+     
   }
               
 
-  getInformacion_sistema() {
+  function getInformacion_sistema() {
      hostname=$(hostname)
      dominio=$(domainname)
      sistema_operativo=$(hostnamectl | grep -e Kernel| awk '{print $2}')
@@ -138,8 +147,10 @@ echo ""
      releaseSO=$(hostnamectl | grep -e "Operating System"| cut -d: -f2 ) 
      net_interfaces=( $(getNetInterfaces) )
      version_apache=$(httpd -V | grep 'version' | cut -d: -f2 | cut -d" " -f2)
-     informacion_sistema="{'hostname':'$hostname','dominio':'$dominio','sistema_operativo':'$sistema_operativo','detalleSO':'$detalleSO','releaseSO':'$releaseSO','net_interfaces':[${net_interfaces[@]}],'version_apache':'$version_apache'}"
-     echo $informacion_sistema
+
+     local informacion_sistema="{\"hostname\":\"$hostname\",\"dominio\":\"$dominio\",\"sistema_operativo\":\"$sistema_operativo\",\"detalleSO\":\"$detalleSO\",\"releaseSO\":\"$releaseSO\",\"net_interfaces\":[$(getNetInterfaces)],\"version_apache\":\"$version_apache\" }"
+     echo "$informacion_sistema"
+
   }
 # ---- Fin INFORMACION SISTEMA
 
@@ -152,28 +163,32 @@ function calificacion(){
     echo -e "***********************************************************************************************************************************\n"
 }
 
+# --- Funciones para las evidencias de resultados
+myfun() {
+    echo "Hello!"
+}
+
+export -f myfun
+
+# ------------------------------------------------
+
 function main(){
    # ---- Invocacion de los módulos 
-   # -- MODULO 2
-   . $dirEjecucion"/mod2_apache.sh"
-   . $dirEjecucion"/mod3_apache.sh"
+   # -- MODULOS
+   #. $dirEjecucion"/mod2_apache.sh"
+   #. $dirEjecucion"/mod3_apache.sh"
+   . $dirEjecucion"/mod4_apache.sh"
+   #. $dirEjecucion"/mod5_apache.sh"
 
-   
 
    # --- Generacion JSON SALIDA  ----------------
-   tipo="\"Resultado_de_revision\""
-   output="{\"tipo\": $tipo",
-   output="$output \"resultados\":[ $sal_mod2, $sal_mod3 ] }"
+   output="{\"tipo\": \"Resultado_de_revision\", \"informacion_escaneo\":$(getInformacion_escaneo), \"informacion_sistema\":$(getInformacion_sistema),"
+   output="$output \"resultados\":[ $sal_mod4 ] }"
+   echo -e "\n\n $output"
+   
    echo $output >> "$dirEjecucion/salida_apache.json"
    # --------------------------------------------
 
-
-   #output=$(tipo=$tipo)
-   informacion_escaneo=$(getInformacion_escaneo)
-   informacion_sistema=$(getInformacion_sistema)
-   output="$output,'informacion_escaneo':$informacion_escaneo,'informacion_sistema':$informacion_sistema,'Resultados':'json salida de los controles'}"
-   #output=$output, $(jo informacion_escaneo=$informacion_escaneo informacion_sistema=$informacion_sistema Resultados=$(jo -a $ejemplo))
-   #echo -e "\n\n $output"
 
    calificacion
 }
