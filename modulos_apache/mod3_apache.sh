@@ -432,7 +432,7 @@ function Mod3_12(){
 
    # JSON ---------------------------
    sal_312=$(jo id="3.12 Ensure Group Write Access for the Document Root Directories and Files Is Properly Restricted" descripcion="Group permissions on Apache Document Root directories $DOCROOT may need to be writable by an authorized group such as development, support, or a production content management tool. However, it is important that the Apache group used to run the server does not have write access to any directories or files in the document root." como_cumplirlo="Preventing Apache from writing to the web document root helps mitigate risk associated with web application vulnerabilities associated with file uploads or command execution. Typically, if an application hosted by Apache needs to write to directory, it is best practice to have that directory live outside the web root." evidencia="$(find -L $APACHE_PREFIX -group $GRP -perm /g=w -ls | head -1)" estado="$resultado")
-   echo -e "\n \n $sal_312"
+   #echo -e "\n \n $sal_312"
 }
 
 
