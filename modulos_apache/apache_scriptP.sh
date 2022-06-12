@@ -163,6 +163,32 @@ function calificacion(){
     echo -e "***********************************************************************************************************************************\n"
 }
 
+# --- Función que genera el JSON
+function getJson() {
+    nombre=$1
+    descripcion=$2
+    remediacion=$3
+    resultado=$4
+    evidencia=$5
+
+    #lenEvid=$#-4
+
+    #cadEvidencia=""
+    #for ((i=5; i<=$#; i++)) do
+    #   eval "arg=\${$i}"
+    #   cadEvidencia="$cadEvidencia evidencia[]=\"$arg\","
+    #   echo $cadEvidencia
+    #done
+
+    #quitamos la ultima coma
+    #len=${#cadEvidencia}
+    #evidencia=${cadEvidencia::len-1}
+
+    json=$(jo id="AP-BAZ-XXX" nombre="$nombre" descripcion="$descripcion" remediacion="$remediacion" estado="$resultado" evidencia[]="$evidencia")
+    echo "$json"
+
+}
+
 # --- Funciones para las evidencias de resultados
 function getEvidencia() {
     #Valor 1 Se espera que tenga un VALOR
@@ -216,6 +242,7 @@ function main(){
 
    # --- Generacion JSON SALIDA  ----------------
    output="{\"tipo\": \"Resultado_de_revision\", \"informacion_escaneo\":$(getInformacion_escaneo), \"informacion_sistema\":$(getInformacion_sistema),"
+#   output="$output \"resultados\":[ $sal_mod2 $sal_mod3 $sal_mod4 $sal_mod5 $sal_mod6 ] }"
    output="$output \"resultados\":[ $sal_mod4 ] }"
    echo -e "\n\n $output"
    
