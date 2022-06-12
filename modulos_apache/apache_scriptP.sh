@@ -164,30 +164,31 @@ function calificacion(){
 }
 
 # --- Función que genera el JSON
-function getJson() {
+function getJsonEv() {
     nombre=$1
     descripcion=$2
     remediacion=$3
     resultado=$4
     evidencia=$5
 
-    #lenEvid=$#-4
-
-    #cadEvidencia=""
-    #for ((i=5; i<=$#; i++)) do
-    #   eval "arg=\${$i}"
-    #   cadEvidencia="$cadEvidencia evidencia[]=\"$arg\","
-    #   echo $cadEvidencia
-    #done
-
-    #quitamos la ultima coma
-    #len=${#cadEvidencia}
-    #evidencia=${cadEvidencia::len-1}
-
     json=$(jo id="AP-BAZ-XXX" nombre="$nombre" descripcion="$descripcion" remediacion="$remediacion" estado="$resultado" evidencia[]="$evidencia")
     echo "$json"
 
 }
+
+function getJsonEv2() {
+    nombre=$1
+    descripcion=$2
+    remediacion=$3
+    resultado=$4
+    evid=$5
+    evid2=$6
+
+    json=$(jo id="AP-BAZ-XXX" nombre="$nombre" descripcion="$descripcion" remediacion="$remediacion" estado="$resultado" evidencia[]="$evid" evidencia[]="$evid2")
+    echo "$json"
+
+}
+#------------------------------------------------------------------------------------------
 
 # --- Funciones para las evidencias de resultados
 function getEvidencia() {
