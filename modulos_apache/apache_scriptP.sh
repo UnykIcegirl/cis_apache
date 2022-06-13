@@ -234,9 +234,9 @@ export -f myfun
 function main(){
    # ---- Invocacion de los módulos 
    # -- MODULOS
-   #. $dirEjecucion"/mod2_apache.sh"
+   . $dirEjecucion"/mod2_apache.sh"
    #. $dirEjecucion"/mod3_apache.sh"
-   . $dirEjecucion"/mod4_apache.sh"
+   #. $dirEjecucion"/mod4_apache.sh"
    #. $dirEjecucion"/mod5_apache.sh"
    #. $dirEjecucion"/mod6_apache.sh"
 
@@ -244,7 +244,7 @@ function main(){
    # --- Generacion JSON SALIDA  ----------------
    output="{\"tipo\": \"Resultado_de_revision\", \"informacion_escaneo\":$(getInformacion_escaneo), \"informacion_sistema\":$(getInformacion_sistema),"
 #   output="$output \"resultados\":[ $sal_mod2 $sal_mod3 $sal_mod4 $sal_mod5 $sal_mod6 ] }"
-   output="$output \"resultados\":[ $sal_mod4 ] }"
+   output="$output \"resultados\":[ $sal_mod2 ] }"
    echo -e "\n\n $output"
    
    echo $output >> "$dirEjecucion/salida_apache.json"
