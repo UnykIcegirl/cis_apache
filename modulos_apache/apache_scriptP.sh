@@ -188,37 +188,65 @@ function getJsonEv2() {
     echo "$json"
 
 }
+
+function getJsonEv3() {
+    nombre=$1
+    descripcion=$2
+    remediacion=$3
+    resultado=$4
+    evid=$5
+    evid2=$6
+    evid3=$7
+
+    json=$(jo id="AP-BAZ-XXX" nombre="$nombre" descripcion="$descripcion" remediacion="$remediacion" estado="$resultado" evidencia[]="$evid" evidencia[]="$evid2" evidencia[]="$evid3")
+    echo "$json"
+
+}
+
+function getJsonEv4() {
+    nombre=$1
+    descripcion=$2
+    remediacion=$3
+    resultado=$4
+    evid=$5
+    evid2=$6
+    evid3=$7
+    evid4=$8
+
+    json=$(jo id="AP-BAZ-XXX" nombre="$nombre" descripcion="$descripcion" remediacion="$remediacion" estado="$resultado" evidencia[]="$evid" evidencia[]="$evid2" evidencia[]="$evid3" evidencia[]="$evid4")
+    echo "$json"
+
+}
 #------------------------------------------------------------------------------------------
 
 # --- Funciones para las evidencias de resultados
 function getEvidencia() {
     #Valor 1 Se espera que tenga un VALOR
     #Valor 2 se espera que tenga una salida vacia o NULL
-    arg1=$1
+    local arg1=$1
     #Salida del comando
-    arg2=$2
-    #arg3=$3
+    local arg2=$2
 
     local cadenaRes
     #Configuracion, se espera un valor como exitoso
     if [ "$arg1" = 1 ] ; then
         if [ -z "$arg2" ]; then 
             #echo "NULL"; 
-            cadenaRes="Falta realizar configuración ya que no se encontro valor/etiqueta"
+            cadenaRes="1Null Lon ${#arg2} Falta realizar configuración ya que no se encontro valor/etiqueta"
         else 
             #echo "Not NULL";
-            cadenaRes="Configuración existente correcta, la salida existente es ==> $arg2."
+            cadenaRes="1NotN Lon ${#arg2} Configuración existente correcta, la salida existente es ==> $arg2."
         fi
     fi
 
     #Configuracion, se espera un valor NULL como exitoso
     if [ "$arg1" = 2 ] ; then
-        if [ -z "$arg2" ]; then 
+        if [ -z "$arg2" ] || [ "$arg2" = "$no_existe" ]; then 
             #echo "NULL"; 
-            cadenaRes="Configuración existente correcta, no se encontro valor/etiqueta."
+            cadenaRes="2Null Lon ${#arg2} Configuración existente correcta, no se encontro valor/etiqueta."
         else 
             #echo "Not NULL";
-            cadenaRes="Falta realizar configuración actualmente existe el valor ==> $arg2."
+            cadenaRes="2 NotNLon ${#arg2} Falta realizar configuración actualmente existe el valor ==> $arg2."
         fi
     fi
 
@@ -234,8 +262,8 @@ export -f myfun
 function main(){
    # ---- Invocacion de los módulos 
    # -- MODULOS
-   . $dirEjecucion"/mod2_apache.sh"
-   #. $dirEjecucion"/mod3_apache.sh"
+   #. $dirEjecucion"/mod2_apache.sh"
+   . $dirEjecucion"/mod3_apache.sh"
    #. $dirEjecucion"/mod4_apache.sh"
    #. $dirEjecucion"/mod5_apache.sh"
    #. $dirEjecucion"/mod6_apache.sh"
@@ -243,8 +271,8 @@ function main(){
 
    # --- Generacion JSON SALIDA  ----------------
    output="{\"tipo\": \"Resultado_de_revision\", \"informacion_escaneo\":$(getInformacion_escaneo), \"informacion_sistema\":$(getInformacion_sistema),"
-#   output="$output \"resultados\":[ $sal_mod2 $sal_mod3 $sal_mod4 $sal_mod5 $sal_mod6 ] }"
-   output="$output \"resultados\":[ $sal_mod2 ] }"
+#   output="$output \"resultados\":[ $sal_mod2, $sal_mod3, $sal_mod4, $sal_mod5, $sal_mod6 ] }"
+   output="$output \"resultados\":[ $sal_mod3 ] }"
    echo -e "\n\n $output"
    
    echo $output >> "$dirEjecucion/salida_apache.json"
