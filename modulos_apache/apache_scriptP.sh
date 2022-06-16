@@ -154,15 +154,6 @@ echo ""
   }
 # ---- Fin INFORMACION SISTEMA
 
-function calificacion(){
-    echo -e "\n\n\n**********************************************************************************************************************************\n"
-    echo -e Controles totales: $total
-    echo -e Controles cumplidos: ${YELLOW} $pass ${WHITE} 
-    echo -e Controles no cumplidos ${RED} $fail ${WHITE}
-    echo -e Porcentaje de cumplimiento: ${YELLOW} $((pass * 100 / total)) % ${WHITE}
-    echo -e "***********************************************************************************************************************************\n"
-}
-
 # --- Función que genera el JSON
 function getJsonEv() {
     nombre=$1
@@ -256,6 +247,14 @@ function getEvidencia() {
 
 export -f myfun
 # ------------------------------------------------
+function calificacion(){
+    echo -e "\n\n\n**********************************************************************************************************************************\n"
+    echo -e Controles totales: $total
+    echo -e Controles cumplidos: ${YELLOW} $pass ${WHITE} 
+    echo -e Controles no cumplidos ${RED} $fail ${WHITE}
+    echo -e Porcentaje de cumplimiento: ${YELLOW} $((pass * 100 / total)) % ${WHITE}
+    echo -e "***********************************************************************************************************************************\n"
+}
 
 
 # ---  MAIN ----------------------
@@ -265,14 +264,17 @@ function main(){
    #. $dirEjecucion"/mod2_apache.sh"
    #. $dirEjecucion"/mod3_apache.sh"
    #. $dirEjecucion"/mod4_apache.sh"
-   . $dirEjecucion"/mod5_apache.sh"
+   #. $dirEjecucion"/mod5_apache.sh"
    #. $dirEjecucion"/mod6_apache.sh"
+   . $dirEjecucion"/mod10_apache.sh"
+   #. $dirEjecucion"/mod11_apache.sh"
+   #. $dirEjecucion"/mod12_apache.sh"
 
 
    # --- Generacion JSON SALIDA  ----------------
    output="{\"tipo\": \"Resultado_de_revision\", \"informacion_escaneo\":$(getInformacion_escaneo), \"informacion_sistema\":$(getInformacion_sistema),"
-#   output="$output \"resultados\":[ $sal_mod2, $sal_mod3, $sal_mod4, $sal_mod5, $sal_mod6 ] }"
-   output="$output \"resultados\":[ $sal_mod5 ] }"
+#   output="$output \"resultados\":[ $sal_mod2, $sal_mod3, $sal_mod4, $sal_mod5, $sal_mod6, $sal_mod10, $sal_mod11, $sal_mod12 ] }"
+   output="$output \"resultados\":[ $sal_mod10 ] }"
    echo -e "\n\n $output"
    
    echo $output >> "$dirEjecucion/salida_apache.json"
