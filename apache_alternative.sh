@@ -1071,7 +1071,7 @@ function Mod6_6(){
    echo    "=========================================================="
    ((++total))
 
-   output=$(httpd -M | grep -i security2_module)
+   output=$(httpd -M | grep -i security2_module || apachectl -M | grep -i security2_module)
    #echo $output
    # we captured output of the subshell, let's interpret it
    if [ "$output" != "" ] ; then
