@@ -67,7 +67,7 @@ function Mod8_1(){
    evidencia="La configuración del atributo ServerTokens es: $rescat"
 
    sal_81=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
-   echo -e "\n \n $sal_81"
+   #echo -e "\n \n $sal_81"
 }
 
 function Mod8_2(){
@@ -120,7 +120,7 @@ function Mod8_2(){
    evidencia="La configuración del atributo ServerSignature es: $rescat"
 
    sal_82=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
-   echo -e "\n \n $sal_82"
+   #echo -e "\n \n $sal_82"
 }
 
 function Mod8_3(){
@@ -182,7 +182,7 @@ function Mod8_3(){
    evid2="Valor actual de la directiva 'alis': $rescat2"
 
    sal_83=$(getJsonEv2 "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia" "$evid2")
-   echo -e "\n \n $sal_83"
+   #echo -e "\n \n $sal_83"
 }
 
 function Mod8_4(){
@@ -235,7 +235,7 @@ function Mod8_4(){
    evidencia="El valor actual de la directiva 'FileETag' es: $rescat"
 
    sal_84=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
-   echo -e "\n \n $sal_84"
+   #echo -e "\n \n $sal_84"
 }
 
 

@@ -223,10 +223,10 @@ function getEvidencia() {
     if [ "$arg1" = 1 ] ; then
         if [ -z "$arg2" ]; then 
             #echo "NULL"; 
-            cadenaRes="1Null Lon ${#arg2} Falta realizar configuración ya que no se encontro valor/etiqueta"
+            cadenaRes="Falta realizar configuración ya que no se encontro valor/etiqueta"
         else 
             #echo "Not NULL";
-            cadenaRes="1NotN Lon ${#arg2} Configuración existente correcta, la salida existente es ==> $arg2."
+            cadenaRes="Configuración existente correcta, la salida existente es ==> $arg2."
         fi
     fi
 
@@ -234,10 +234,10 @@ function getEvidencia() {
     if [ "$arg1" = 2 ] ; then
         if [ -z "$arg2" ] || [ "$arg2" = "$no_existe" ]; then 
             #echo "NULL"; 
-            cadenaRes="2Null Lon ${#arg2} Configuración existente correcta, no se encontro valor/etiqueta."
+            cadenaRes="Configuración existente correcta, no se encontro valor/etiqueta."
         else 
             #echo "Not NULL";
-            cadenaRes="2 NotNLon ${#arg2} Falta realizar configuración actualmente existe el valor ==> $arg2."
+            cadenaRes="Falta realizar configuración actualmente existe el valor ==> $arg2."
         fi
     fi
 
@@ -261,21 +261,24 @@ function calificacion(){
 function main(){
    # ---- Invocacion de los módulos 
    # -- MODULOS
-   #. $dirEjecucion"/mod2_apache.sh"
-   #. $dirEjecucion"/mod3_apache.sh"
-   #. $dirEjecucion"/mod4_apache.sh"
-   #. $dirEjecucion"/mod5_apache.sh"
-   #. $dirEjecucion"/mod6_apache.sh"
+   . $dirEjecucion"/mod2_apache.sh"
+   . $dirEjecucion"/mod3_apache.sh"
+   . $dirEjecucion"/mod4_apache.sh"
+   . $dirEjecucion"/mod5_apache.sh"
+   . $dirEjecucion"/mod6_apache.sh"
+   . $dirEjecucion"/mod7_apache.sh"
+   . $dirEjecucion"/mod8_apache.sh"
+   . $dirEjecucion"/mod9_apache.sh"
    . $dirEjecucion"/mod10_apache.sh"
-   #. $dirEjecucion"/mod11_apache.sh"
-   #. $dirEjecucion"/mod12_apache.sh"
+   . $dirEjecucion"/mod11_apache.sh"
+   . $dirEjecucion"/mod12_apache.sh"
 
 
    # --- Generacion JSON SALIDA  ----------------
    output="{\"tipo\": \"Resultado_de_revision\", \"informacion_escaneo\":$(getInformacion_escaneo), \"informacion_sistema\":$(getInformacion_sistema),"
-#   output="$output \"resultados\":[ $sal_mod2, $sal_mod3, $sal_mod4, $sal_mod5, $sal_mod6, $sal_mod10, $sal_mod11, $sal_mod12 ] }"
-   output="$output \"resultados\":[ $sal_mod10 ] }"
-   echo -e "\n\n $output"
+   output="$output \"resultados\":[ $sal_mod2, $sal_mod3, $sal_mod4, $sal_mod5, $sal_mod6, $sal_mod7, $sal_mod8, $sal_mod9, $sal_mod10, $sal_mod11, $sal_mod12 ] }"
+#   output="$output \"resultados\":[ $sal_mod7 ] }"
+#   echo -e "\n\n $output"
    
    echo $output >> "$dirEjecucion/salida_apache.json"
    # --------------------------------------------

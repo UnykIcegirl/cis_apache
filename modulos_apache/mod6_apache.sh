@@ -154,7 +154,7 @@ function Mod6_6(){
    echo    "=========================================================="
    ((++total))
 
-   output=$(httpd -M | grep -i security2_module)
+   output=$(httpd -M | grep -i security2_module || apachectl -M | grep -i security2_module)
    #echo $output
 
    local resultado
@@ -219,7 +219,7 @@ function Mod6_7(){
    local evid4="Configuración del nivel de paranoia:  $paranoia"
 
    sal_67=$(getJsonEv4 "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia" "$evid2" "$evid3" "$evid4")
-   echo -e "$sal_67"
+   #echo -e "$sal_67"
 
 }
 
