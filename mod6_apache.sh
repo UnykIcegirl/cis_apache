@@ -76,7 +76,7 @@ function Mod6_2(){
    evidencia="$(getEvidencia "1" "$errorlog")"
 
    sal_62=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
-   echo -e "$sal_62"
+   #echo -e "$sal_62"
 
 }
 

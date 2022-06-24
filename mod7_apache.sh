@@ -342,7 +342,7 @@ function Mod7_6(){
    evidencia="El valor del atributo 'SSLInsecureRenegotiation' es: $rescat"
 
    sal_76=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
-   echo -e "\n \n $sal_76"
+   #echo -e "\n \n $sal_76"
 }
 
 function Mod7_7(){
@@ -392,7 +392,7 @@ function Mod7_7(){
    evidencia="El valor del atributo 'SSLCompression' es: $rescat"
 
    sal_77=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
-   echo -e "\n \n $sal_77"
+   #echo -e "\n \n $sal_77"
 }
 
 function Mod7_8(){
@@ -473,7 +473,7 @@ function Mod7_8(){
    evid2="El valor del atributo 'SSLCipherSuite' es: $rescat2"
 
    sal_78=$(getJsonEv2 "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia" "$evid2")
-   echo -e "\n \n $sal_78"
+   #echo -e "\n \n $sal_78"
 }
 
 function Mod7_9(){
@@ -503,7 +503,7 @@ function Mod7_9(){
    evidencia="El valor del atributo 'Redirect' es: $rescat"
 
    sal_79=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
-   echo -e "\n \n $sal_79"
+   #echo -e "\n \n $sal_79"
 }
 
 function Mod7_10(){
@@ -585,7 +585,7 @@ function Mod7_10(){
    evid2="El valor del atributo 'SSLStaplingCache' es: $rescat2"
 
    sal_710=$(getJsonEv2 "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia" "$evid2")
-   echo -e "\n \n $sal_710"
+   #echo -e "\n \n $sal_710"
 }
 
 function Mod7_11(){
@@ -648,7 +648,7 @@ function Mod7_11(){
    evidencia="El valor del atributo 'Strict-Transport-Security' es: $rescat"
 
    sal_711=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
-   echo -e "\n \n $sal_711"
+   #echo -e "\n \n $sal_711"
 }
 
 function Mod7_12(){
@@ -711,7 +711,7 @@ function Mod7_12(){
    evidencia="El valor del atributo 'SSLCipherSuite' es: $rescat"
 
    sal_712=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
-   echo -e "\n \n $sal_712"
+   #echo -e "\n \n $sal_712"
 }
 
 

@@ -68,7 +68,7 @@ function Mod9_1(){
    evidencia="Valor actual del atributo 'Timeout' es: $(cat "$dirConf" | grep -iE "^Timeout [0-9]{,2}")"
 
    sal_91=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
-   echo -e "\n \n $sal_91"
+   #echo -e "\n \n $sal_91"
 }
 
 function Mod9_2(){
@@ -100,7 +100,7 @@ function Mod9_2(){
    evidencia="El valor del atributo 'KeepAlive' es: $(grep -i "^\s*KeepAlive " "$dirConf")"
 
    sal_92=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
-   echo -e "\n \n $sal_92"
+   #echo -e "\n \n $sal_92"
 }
 
 function Mod9_3(){
@@ -156,7 +156,7 @@ function Mod9_3(){
    evidencia="El valor actual del atributo 'MaxKeepAliveRequests' es: $cadena "
 
    sal_93=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
-   echo -e "\n \n $sal_93"
+   #echo -e "\n \n $sal_93"
 }
 
 function Mod9_4(){
@@ -212,7 +212,7 @@ function Mod9_4(){
    evidencia="El valor actual del atributo 'KeepAliveTimeout' es: $cadena "
 
    sal_94=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
-   echo -e "\n \n $sal_94"
+   #echo -e "\n \n $sal_94"
 }
 
 function Mod9_5(){
@@ -264,7 +264,7 @@ function Mod9_5(){
    evid2="Valor de la directiva 'RequestReadTimeout'  $(grep -i "^\s*RequestReadTimeout" "$dirConf")"
 
    sal_95=$(getJsonEv2 "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia", $evid2)
-   echo -e "\n \n $sal_95"
+   #echo -e "\n \n $sal_95"
 }
 
 function Mod9_6(){
@@ -321,7 +321,7 @@ function Mod9_6(){
    evidencia="Valor de la directiva 'RequestReadTimeout' $(grep -i "^\s*RequestReadTimeout" "$dirConf") "
 
    sal_96=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
-   echo -e "\n \n $sal_96"
+   #echo -e "\n \n $sal_96"
 }
 
 

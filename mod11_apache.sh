@@ -46,7 +46,7 @@ function Mod11_1(){
    evidencia="Configuración del módulo SELinux: $(sestatus | grep -i mode | head -1)"
 
    sal_111=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
-   echo -e "\n \n $sal_111"
+   #echo -e "\n \n $sal_111"
 }
 
 function Mod11_2(){
@@ -78,7 +78,7 @@ function Mod11_2(){
    evidencia="La configuración de las políticas de Apache http es: $(ps -eZ | grep -i httpd | head -1)"
 
    sal_112=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
-   echo -e "\n \n $sal_112"
+   #echo -e "\n \n $sal_112"
 }
 
 function Mod11_3(){
@@ -109,7 +109,7 @@ function Mod11_3(){
    evidencia="$(getEvidencia "2" "$output")"
 
    sal_113=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
-   echo -e "\n \n $sal_113"
+   #echo -e "\n \n $sal_113"
 }
 
 
