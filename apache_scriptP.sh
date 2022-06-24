@@ -45,6 +45,8 @@ dirEjecucion="$(cd "$(dirname "$0")"; pwd)"
 # -- Borramos el archivo salida_apache.json -----
 echo -e "Borrando archivo "$dirEjecucion/salida_apache.json" \n \n"
 rm -f "$dirEjecucion/salida_apache.json"
+echo -e "Borrando archivo "$dirEjecucion/Totalsec_Apache.html" \n \n"
+rm -f "$dirEjecucion/Totalsec_Apache.html"
 # ----------------------------------------------
 
 
@@ -105,14 +107,14 @@ echo ""
   function getInformacion_escaneo() {
     fecha_escaneo=$(/bin/date +'%d-%m-%Y - %T')
     usuario_ejecutor=$(whoami)
-    version_script="1.0"
+    version_script="'1.0'"
     tipo_de_servidor="WEB"
     tecnologia=$(httpd -V|grep 'Server version' | cut -d':' -f 2)
     version_tecnologia=["'2.4.53'","'2'"]
     version=$(httpd -V|grep 'Server version' | cut -d':' -f 2 | cut -d'/' -f 2 | cut -d' ' -f 1)
               
     # JSON ---------------------------
-    local informacion_escaneo=$(jo fecha_escaneo="$fecha_escaneo" usuario_ejecutor="$usuario_ejecutor" version_script=1.0  tipo_de_servidor="WEB" tecnologia="$tecnologia" version_tecnologica[]='2.4' version_tecnologica[]="$version")
+    local informacion_escaneo=$(jo fecha_escaneo="$fecha_escaneo" usuario_ejecutor="$usuario_ejecutor" version_script="$version_script"  tipo_de_servidor="WEB" tecnologia="$tecnologia" version_tecnologica[]='2.4' version_tecnologica[]="$version")
     echo "$informacion_escaneo"
 
   }
@@ -296,6 +298,16 @@ function main(){
 }
 
 main
+
+# --- Reporte HTML
+# Change this to whatever the name of your script is
+myscript="$dirEjecucion/moduloreporte.py -f $dirEjecucion/salida_apache.json -o $dirEjecucion/Totalsec_Apache.html"
+if python -V | grep -iq 'Python 2'; then
+    python $myscript
+else
+    python3 $myscript
+fi
+# --- Fin Reporte HTML
 
 # --- FIN SCRIPT 
 
