@@ -49,7 +49,7 @@ rm -f "$dirEjecucion/salida_apache.json"
 
 
 # -- Exportar directorio JO -----------------------------------
-dirJO="$dirEjecucion/jo/jo-master"
+dirJO="$dirEjecucion/jo-master"
 export PATH="$dirJO:$PATH"
 source ~/.bashrc
 #--------------------------------------------------------------
@@ -58,8 +58,12 @@ source ~/.bashrc
 dirConf=$(ps -ef | grep httpd | grep -oE '/.*conf.*conf'| cut -d ' ' -f3| awk '{print $1}'| uniq)
 #Validar si se encuentra ejecutandose apache en rhel o no se tiene variables globales
 if [ -z "$dirConf" -a "$dirConf" != " " ]; then
-    echo -e "\n\n     ---No se puede recuperar el directorio de configuración de Apache----"
-    exit $dirConf
+    # Consideremos la ruta 'HTTPD_ROOT'
+    dirConf=$(httpd -V|grep 'HTTPD_ROOT'| cut -d'=' -f 2 | sed "s/\"//g")"/"$(httpd -V|grep 'SERVER_CONFIG_FILE'| cut -d'=' -f 2 | sed "s/\"//g")
+    if [ -z "$dirConf" -a "$dirConf" != " " ]; then
+        echo -e "\n\n     ---No se puede recuperar el directorio de configuración de Apache----"
+        exit $dirConf
+    fi
 fi
 
 confDirectorio=${dirConf%/*}
@@ -103,11 +107,12 @@ echo ""
     usuario_ejecutor=$(whoami)
     version_script="1.0"
     tipo_de_servidor="WEB"
-    tecnologia="Apache HTTP Server"
+    tecnologia=$(httpd -V|grep 'Server version' | cut -d':' -f 2)
     version_tecnologia=["'2.4.53'","'2'"]
+    version=$(httpd -V|grep 'Server version' | cut -d':' -f 2 | cut -d'/' -f 2 | cut -d' ' -f 1)
               
     # JSON ---------------------------
-    local informacion_escaneo=$(jo fecha_escaneo="$fecha_escaneo" usuario_ejecutor="$usuario_ejecutor" version_script=1.0  tipo_de_servidor="WEB" tecnologia="Apache HTTP Server" version_tecnologica[]='2.2' version_tecnologica[]='2.4')
+    local informacion_escaneo=$(jo fecha_escaneo="$fecha_escaneo" usuario_ejecutor="$usuario_ejecutor" version_script=1.0  tipo_de_servidor="WEB" tecnologia="$tecnologia" version_tecnologica[]='2.4' version_tecnologica[]="$version")
     echo "$informacion_escaneo"
 
   }
@@ -147,8 +152,12 @@ echo ""
      releaseSO=$(hostnamectl | grep -e "Operating System"| cut -d: -f2 ) 
      net_interfaces=( $(getNetInterfaces) )
      version_apache=$(httpd -V | grep 'version' | cut -d: -f2 | cut -d" " -f2)
+     directorio_instalacion=$APACHE_PREFIX
+     directorio_conf=$dirConf
+     usuario_apache=$usuario
+     grupo_apache=$grupo
 
-     local informacion_sistema="{\"hostname\":\"$hostname\",\"dominio\":\"$dominio\",\"sistema_operativo\":\"$sistema_operativo\",\"detalleSO\":\"$detalleSO\",\"releaseSO\":\"$releaseSO\",\"net_interfaces\":[$(getNetInterfaces)],\"version_apache\":\"$version_apache\" }"
+     local informacion_sistema="{\"hostname\":\"$hostname\",\"dominio\":\"$dominio\",\"sistema_operativo\":\"$sistema_operativo\",\"detalleSO\":\"$detalleSO\",\"releaseSO\":\"$releaseSO\",\"net_interfaces\":[$(getNetInterfaces)],\"version_apache\":\"$version_apache\", \"directorio_instalacion\":\"$directorio_instalacion\", \"directorio_conf\":\"$directorio_conf\",  \"usuario_apache\":\"$usuario_apache\", \"grupo_apache\":\"$grupo_apache\" }"
      echo "$informacion_sistema"
 
   }
@@ -245,7 +254,6 @@ function getEvidencia() {
 
 }
 
-export -f myfun
 # ------------------------------------------------
 function calificacion(){
     echo -e "\n\n\n**********************************************************************************************************************************\n"
