@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #!/bin/sh
 
 
@@ -11,7 +10,6 @@
 ####################################################
 
 declare fecha=$(date "+%d-%m-%Y %H:%M:%S")
-declare fechan=$(date "+%d-%m-%Y")
 declare RED='\e[1;31m'
 declare WHITE='\e[1;0m'
 declare GREEN='\e[1;32m'
@@ -42,7 +40,7 @@ echo "=================================="
 
 dirEjecucion="$(cd "$(dirname "$0")"; pwd)"
 
-# -- Borramos el archivo salida_apache.json -----
+# -- Borramos los archivos de salida json y html -----
 echo -e "Borrando archivo "$dirEjecucion/salida_apache.json" \n \n"
 rm -f "$dirEjecucion/salida_apache.json"
 echo -e "Borrando archivo "$dirEjecucion/Totalsec_Apache.html" \n \n"
@@ -52,8 +50,10 @@ rm -f "$dirEjecucion/Totalsec_Apache.html"
 
 # -- Exportar directorio JO -----------------------------------
 dirJO="$dirEjecucion/jo-master"
+echo "Dirjo  $dirJO"
 export PATH="$dirJO:$PATH"
 source ~/.bashrc
+echo $PATH
 #--------------------------------------------------------------
 
 # -- Variables Configuracion Apache -------------------------------------
@@ -93,14 +93,12 @@ export dirConf
 export APACHE_PREFIX
 export usuario
 export grupo
-export dirEjecucicion
+export dirEjecucion
 #--------------------------------------------------
 
 
 cd $APACHE_PREFIX
 echo "PWD: $(pwd)"
-echo -e "\n \n Instancias activas:" | tee  instancias_apache_$(hostname)_${fechan}.txt
-ps -fea | grep -ie httpd | grep -oE  "\-f /.*conf.*.conf " | cut -d ' ' -f2 | awk '{print $1}'| uniq | tee instancias_activas.txt
 echo ""
 
 # ----- INFORMACION SISTEMA Y ESCANEO   ------------------------------
@@ -114,7 +112,7 @@ echo ""
     version=$(httpd -V|grep 'Server version' | cut -d':' -f 2 | cut -d'/' -f 2 | cut -d' ' -f 1)
               
     # JSON ---------------------------
-    local informacion_escaneo=$(jo fecha_escaneo="$fecha_escaneo" usuario_ejecutor="$usuario_ejecutor" version_script="$version_script"  tipo_de_servidor="WEB" tecnologia="$tecnologia" version_tecnologica[]='2.4' version_tecnologica[]="$version")
+    local informacion_escaneo=$(jo fecha_escaneo="$fecha_escaneo" usuario_ejecutor="$usuario_ejecutor" version_script="$version_script"  tipo_de_servidor="WEB" tecnologia="$tecnologia" version_tecnologica[]="2.4")
     echo "$informacion_escaneo"
 
   }
@@ -291,7 +289,7 @@ function main(){
 #   echo -e "\n\n $output"
    
    echo $output >> "$dirEjecucion/salida_apache.json"
-   # --------------------------------------------
+   # ---------------------------------------------------
 
 
    calificacion
@@ -300,13 +298,17 @@ function main(){
 main
 
 # --- Reporte HTML
-# Change this to whatever the name of your script is
-myscript="$dirEjecucion/moduloreporte.py -f $dirEjecucion/salida_apache.json -o $dirEjecucion/Totalsec_Apache.html"
-if python -V | grep -iq 'Python 2'; then
-    python $myscript
+cd $dirEjecucion
+
+python_version=$(python --version 2>&1)
+script="moduloreporte.py -f salida_apache.json -o Totalsec_Apache.html"
+
+if [[ "$python_version" == *"Python 2"* ]]; then
+    python $script
 else
-    python3 $myscript
+    python3 $script
 fi
+echo "fin Ejecutamos html"
 # --- Fin Reporte HTML
 
 # --- FIN SCRIPT 

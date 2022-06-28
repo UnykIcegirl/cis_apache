@@ -1,12 +1,17 @@
 import json
 import argparse
+import codecs
+import sys
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-f","--file",help="archivo json a mostrar en el reporte", type=str)
 parser.add_argument("-o","--output",help="nombre del archivo destino", type=str)
 args = parser.parse_args()
 print (args.file)
+
 file= open(args.file,"r")
 myjson=json.load(file)
+
 strFor =  "<!DOCTYPE html>"
 strFor = strFor + "<html><head>"
 strFor = strFor + "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"		
@@ -44,11 +49,11 @@ strFor = strFor + "<label>Usuario: "+ myjson['informacion_escaneo']['usuario_eje
 strFor = strFor + "<label>Sistema Operativo: "+ myjson['informacion_sistema']['sistema_operativo']  +"</label><br>"
 strFor = strFor + "<label>Detalle Sistema Operativo: "+ myjson['informacion_sistema']['detalleSO']  +"</label><br>"
 strFor = strFor + "<label>Release: "+ myjson['informacion_sistema']['releaseSO']  +"</label><br>"
-strFor = strFor + "<label>Versión Apache: "+ myjson['informacion_sistema']['version_apache']  +"</label><br>"
-strFor = strFor + "<label>Directorio instalación: "+ myjson['informacion_sistema']['directorio_instalacion']  +"</label><br>"
-strFor = strFor + "<label>Directorio configuración: "+ myjson['informacion_sistema']['directorio_conf']  +"</label><br>"
-strFor = strFor + "<label>Usuario instalación apache: "+ myjson['informacion_sistema']['usuario_apache']  +"</label><br>"
-strFor = strFor + "<label>Grupo instalación apache: "+ myjson['informacion_sistema']['grupo_apache']  +"</label><br>"
+strFor = strFor + "<label>Version Apache: "+ myjson['informacion_sistema']['version_apache']  +"</label><br>"
+strFor = strFor + "<label>Directorio instalacion: "+ myjson['informacion_sistema']['directorio_instalacion']  +"</label><br>"
+strFor = strFor + "<label>Directorio configuracion: "+ myjson['informacion_sistema']['directorio_conf']  +"</label><br>"
+strFor = strFor + "<label>Usuario instalacion apache: "+ myjson['informacion_sistema']['usuario_apache']  +"</label><br>"
+strFor = strFor + "<label>Grupo instalacion apache: "+ myjson['informacion_sistema']['grupo_apache']  +"</label><br>"
 strFor = strFor + "<label>Fecha y hora de ejecucion: "+ myjson['informacion_escaneo']['fecha_escaneo']+"</label><br>"
 strFor = strFor + "</div><br><br>"
 strFor = strFor + "<h3>Resultado del escaneo</h3><br>"
@@ -92,7 +97,7 @@ for r in myjson['resultados']:
     strFor = strFor + "<br>"
     strFor = strFor + "</div>"
     strFor = strFor + "<div id='ruleResultArea'>"
-    strFor = strFor + "<h2>Remediación</h2>"
+    strFor = strFor + "<h2>Remediacion</h2>"
     strFor = strFor + "<br>"
     strFor = strFor + "<p> &emsp;&emsp;" + r['remediacion'] + "</p>"
     strFor = strFor + "<br>"
@@ -111,6 +116,16 @@ strFor = strFor +  "</div>"
 strFor = strFor +  "</div>"
 strFor = strFor +  "</body>"
 strFor = strFor +  "</html>"
-f = open (args.output,'w')
-f.write(strFor)
-f.close()
+
+# archivo de salida
+file_output=""
+if sys.version_info.major == 3:
+    # Python3
+    file_output = open (args.output,'w')
+else:
+    # Python2
+    OUTPUT_ENCODING = 'utf-8'
+    file_output  = codecs.open (args.output,"w", OUTPUT_ENCODING)
+
+file_output.write(strFor)
+file_output.close()
