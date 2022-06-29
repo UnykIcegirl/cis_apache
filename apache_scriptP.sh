@@ -48,13 +48,18 @@ rm -f "$dirEjecucion/Totalsec_Apache.html"
 # ----------------------------------------------
 
 
-# -- Exportar directorio JO -----------------------------------
+# -- Biblioteca JO -----------------------------------
+#descomprimir carpeta
 dirJO="$dirEjecucion/jo-master"
-echo "Dirjo  $dirJO"
+if [ ! -d "$dirJO" ]; then
+    unzip -d "$dirEjecucion" "jo-master-v1.zip"
+fi
+
+#Exportar la ruta al PATH
 export PATH="$dirJO:$PATH"
 source ~/.bashrc
-echo $PATH
-#--------------------------------------------------------------
+#echo $PATH
+#--- Fin Biblioteca JO ---------------------------------
 
 # -- Variables Configuracion Apache -------------------------------------
 dirConf=$(ps -ef | grep httpd | grep -oE '/.*conf.*conf'| cut -d ' ' -f3| awk '{print $1}'| uniq)
@@ -163,7 +168,7 @@ echo ""
   }
 # ---- Fin INFORMACION SISTEMA
 
-# --- Función que genera el JSON
+# --- Funciones que generan el JSON
 function getJsonEv() {
     nombre=$1
     descripcion=$2
@@ -285,7 +290,6 @@ function main(){
    # --- Generacion JSON SALIDA  ----------------
    output="{\"tipo\": \"Resultado_de_revision\", \"informacion_escaneo\":$(getInformacion_escaneo), \"informacion_sistema\":$(getInformacion_sistema),"
    output="$output \"resultados\":[ $sal_mod2, $sal_mod3, $sal_mod4, $sal_mod5, $sal_mod6, $sal_mod7, $sal_mod8, $sal_mod9, $sal_mod10, $sal_mod11, $sal_mod12 ] }"
-#   output="$output \"resultados\":[ $sal_mod7 ] }"
 #   echo -e "\n\n $output"
    
    echo $output >> "$dirEjecucion/salida_apache.json"
