@@ -4,6 +4,9 @@ Posicionarte en la carpeta
 ```
 $ cd cis_apache
 ```
+## Requisitos
+***
+Tener instalado el paquete **unzip**
 
 ## Ejecución
 ***
