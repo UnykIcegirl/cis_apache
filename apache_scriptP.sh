@@ -41,7 +41,7 @@ echo "=================================="
 dirEjecucion="$(cd "$(dirname "$0")"; pwd)"
 
 # -- Borramos los archivos de salida json y html -----
-echo -e "Borrando archivo "$dirEjecucion/salida_apache.json" \n \n"
+echo -e "Borrando archivo "$dirEjecucion/salida_apache.json""
 rm -f "$dirEjecucion/salida_apache.json"
 echo -e "Borrando archivo "$dirEjecucion/Totalsec_Apache.html" \n \n"
 rm -f "$dirEjecucion/Totalsec_Apache.html"
