@@ -1,2 +1,0 @@
-# version check
-[ "$(${JO:-jo} -v)" = "jo @PACKAGE_VERSION@" ]
