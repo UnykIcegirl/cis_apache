@@ -1,8 +1,4 @@
-#!/bin/bash
-
-#!/bin/sh
-
-#source $dirEjecucion"/libraryFunctions.sh"
+#!/usr/bin/env bash
 
 #####################################################
 # DSI-CSA                                                                                
