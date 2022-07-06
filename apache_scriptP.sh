@@ -161,7 +161,7 @@ echo ""
      usuario_apache=$usuario
      grupo_apache=$grupo
 
-     local informacion_sistema="{\"hostname\":\"$hostname\",\"dominio\":\"$dominio\",\"sistema_operativo\":\"$sistema_operativo\",\"detalleSO\":\"$detalleSO\",\"releaseSO\":\"$releaseSO\",\"net_interfaces\":[$(getNetInterfaces)],\"version\":\"Version $version_apache\", \"directorio_instalacion\":\"$directorio_instalacion\", \"directorio_conf\":\"$directorio_conf\",  \"usuario_apache\":\"$usuario_apache\", \"grupo_apache\":\"$grupo_apache\" }"
+     local informacion_sistema="{\"hostname\":\"$hostname\",\"dominio\":\"$dominio\",\"sistema_operativo\":\"$sistema_operativo\",\"detalleSO\":\"$detalleSO\",\"releaseSO\":\"$releaseSO\",\"net_interfaces\":[$(getNetInterfaces)],\"version\":\"$version_apache\", \"directorio_instalacion\":\"$directorio_instalacion\", \"directorio_conf\":\"$directorio_conf\",  \"usuario_apache\":\"$usuario_apache\", \"grupo_apache\":\"$grupo_apache\" }"
      echo "$informacion_sistema"
 
   }
