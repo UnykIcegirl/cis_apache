@@ -50,24 +50,23 @@ function Mod10_1(){
    local resultado   
    # we captured output of the subshell, let's interpret it
    if [[ "$contFinal" > 0 ]]; then
-     #echo "No cumple";
        echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
        resultado="No Cumple"
        ((++fail))
    else
-     #echo "Cumple";
        echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
        resultado="Cumple"
        ((++pass))
    fi
 
    # JSON --------------------------------------------------------------------------------
+   id="APH-GS-CSA-66"
    nombre="10.1 Ensure the LimitRequestLine directive is Set to 512 or less"
    descripcion="Buffer Overflow attacks attempt to exploit an application by providing more data than the application buffer can contain. If the application allows copying data to the buffer to overflow the boundaries of the buffer, then the application is vulnerable to a buffer overflow. The results of Buffer overflow vulnerabilities vary, and may result in the application crashing, or may allow the attacker to execute instructions provided in the data. The Apache LimitRequest* directives allow the Apache web server to limit the sizes of requests and request fields and can be used to help protect programs and applications processing those requests.  Specifically, the LimitRequestLine directive limits the allowed size of a client's HTTP request-line, which consists of the HTTP method, URI, and protocol version."
    remediacion="Perform the following to implement the recommended state:   Add or modify the LimitRequestline directive in the Apache configuration to have a value of 512 or shorter.  LimitRequestline 512"
    evidencia="La configuración de la directiva LimitRequestLine es: $cadena"
 
-   sal_101=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
+   sal_101=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado"  "$(getBase64 "$evidencia")" "$id")
    #echo -e "\n \n $sal_101"
 }
 
@@ -107,24 +106,23 @@ function Mod10_2(){
    
    local resultado
    if [[ "$contFinal" > 0 ]]; then
-     #echo "No cumple";
        echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
        resultado="No Cumple"
        ((++fail))
    else
-     #echo "Cumple";
        echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
        resultado="Cumple"
        ((++pass))
    fi
 
    # JSON --------------------------------------------------------------------------------
+   id="APH-GS-CSA-67"
    nombre="10.2 Ensure the LimitRequestFields Directive is Set to 100 or Less"
    descripcion="The LimitRequestFields directive limits the number of fields allowed in an HTTP request."
    remediacion="Perform the following to implement the recommended state:   Add or modify the LimitRequestFields directive in the Apache configuration to have a value of 100 or less. If the directive is not present the default depends on a compile time configuration, but defaults to a value of 100.  LimitRequestFields 100"
    evidencia="La configuración de la directiva LimitRequestFields es: $cadena"
 
-   sal_102=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
+   sal_102=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado"  "$(getBase64 "$evidencia")" "$id")
    #echo -e "\n \n $sal_102"
 }
 
@@ -163,24 +161,23 @@ function Mod10_3(){
    
    local resultado
    if [[ "$contFinal" > 0 ]]; then
-     #echo "No cumple";
        echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
        resultado="No Cumple"
        ((++fail))
    else
-     #echo "Cumple";
        echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
        resultado="Cumple"
        ((++pass))
    fi
 
    # JSON --------------------------------------------------------------------------------
+   id="APH-GS-CSA-68"
    nombre="10.3 Ensure the LimitRequestFieldsize Directive is Set to 1024 or Less"
    descripcion="The LimitRequestFieldSize limits the number of bytes that will be allowed in an HTTP request header. It is recommended that the LimitRequestFieldSize directive be set to 1024 or less."
    remediacion="Perform the following to implement the recommended state:   Add or modify the LimitRequestFieldsize directive in the Apache configuration to have a value of 1024 or less.  LimitRequestFieldsize 1024"
    evidencia="La configuración de la directiva LimitRequestFieldsize es: $cadena"
 
-   sal_103=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
+   sal_103=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado"  "$(getBase64 "$evidencia")"  "$id")
    #echo -e "\n \n $sal_103"
 }
 
@@ -219,24 +216,23 @@ function Mod10_4(){
    
    local resultado
    if [[ "$contFinal" > 0 ]]; then
-     #echo "No cumple";
        echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
        resultado="No Cumple"
        ((++fail))
    else
-     #echo "Cumple";
        echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
        resultado="Cumple"
        ((++pass))
    fi
 
    # JSON --------------------------------------------------------------------------------
+   id="APH-GS-CSA-69"
    nombre="10.4 Ensure the LimitRequestBody Directive is Set to 102400 or Less"
    descripcion="The LimitRequestBody directive limits the number of bytes that are allowed in a request body. Size of requests may vary greatly; for example, during a file upload the size of the file must fit within this limit."
    remediacion="Perform the following to implement the recommended state:   Add or modify the LimitRequestBody directive in the Apache configuration to have a value of 102400 (100K) or less. Please read the Apache documentation so that it is understood that this directive will limit the size of file up-loads to the web server.  LimitRequestBody 102400"
    evidencia="La configuración de la directiva LimitRequestBody es: $cadena"
 
-   sal_104=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
+   sal_104=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado"  "$(getBase64 "$evidencia")" "$id")
    #echo -e "\n \n $sal_104"
 }
 

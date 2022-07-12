@@ -40,13 +40,13 @@ function Mod4_1(){
    #evidencias/comandos
    cmd1=$(perl -ne 'print if /^ *<Directory *\//i .. /<\/Directory/i' $dirConf |grep "Require all denied")
 
+   id="APH-GS-CSA-21"
    nombre="4.1 Ensure Access to OS Root Directory Is Denied By Default"
    descripcion="The Apache Directory directive allows for directory specific configuration of access controls and many other features and options. One important usage is to create a default deny policy that does not allow access to operating system directories and files, except for those specifically allowed. This is done by denying access to the OS root directory."
    remediacion="Perform the following to implement the recommended state:  1. Search the Apache configuration files (httpd.conf and any included configuration files) to find a root <Directory> element.  2. Add a single Require directive and set the value to all denied  3. Remove any Deny and Allow directives from the root <Directory> element."   
    evidencia="$(getEvidencia "1" "$cmd1")"
-   estado="$resultado"
 
-   sal_41=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$estado" "$evidencia")
+   sal_41=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$evidencia")" "$id")
    #echo -e "\n \n $sal_41"
 }
 
@@ -78,11 +78,12 @@ function Mod4_3(){
    cmd1=$(perl -ne 'print if /^ *<Directory *\//i .. /<\/Directory/i' $dirConf|grep "AllowOverride None")
    cmd2=$(perl -ne 'print if /^ *<Directory *\//i .. /<\/Directory/i' $dirConf|grep "AllowOverrideList")
 
+   id="APH-GS-CSA-22"
    nombre="4.3 Ensure OverRide Is Disabled for the OS Root Directory"
    descripcion="The Apache AllowOverRide directive and the new AllowOverrideList directive allow for .htaccess files to be used to override much of the configuration, including authentication, handling of document types, auto generated indexes, access control, and options. When the server finds an .htaccess file \\\(as specified by AccessFileName\\\) it needs to know which directives declared in that file can override earlier access information. When this directive is set to None, then .htaccess files are completely ignored. In this case, the server will not even attempt to read .htaccess files in the filesystem. When this directive is set to All, then any directive which has the .htaccess Context is allowed in the .htaccess files."
    remediacion="Perform the following to implement the recommended state:  1. Search the Apache configuration files (httpd.conf and any included configuration files) to find a root <Directory> element.   2. Remove any AllowOverrideList directives found.   3. Add a single AllowOverride directive if there is none.   4. Set the value for AllowOverride to None."
 
-   sal_43=$(getJsonEv2 "$nombre" "$descripcion" "$remediacion" "$estado" "$(getEvidencia "1" "$cmd1")" "$(getEvidencia "2" "$cmd2")")
+   sal_43=$(getJsonEv2 "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$(getEvidencia "1" "$cmd1")")"  "$(getBase64 "$(getEvidencia "2" "$cmd2")")"  "$id")
    #echo -e "\n \n $sal_43"
 }
 
@@ -109,12 +110,13 @@ function Mod4_4(){
    # JSON ---------------------------
    cmd1=$(grep -i AllowOverride "$dirConf"| grep -i "AllowOverrideList")
 
+   id="APH-GS-CSA-23"
    nombre="4.4 Ensure OverRide Is Disabled for All Directories"
    descripcion="The Apache AllowOverride directive and the new AllowOverrideList directive allow for .htaccess files to be used to override much of the configuration, including authentication, handling of document types, auto generated indexes, access control, and options. When the server finds an .htaccess file (as specified by AccessFileName) it needs to know which directives declared in that file can override earlier access information. When this directive is set to None, then .htaccess files are completely ignored. In this case, the server will not even attempt to read .htaccess files in the filesystem. When this directive is set to All, then any directive which has the .htaccess context is allowed in .htaccess files."
    remediacion="Perform the following to implement the recommended state: 1. Search the Apache configuration files (httpd.conf and any included configuration files) to find AllowOverride directives.   2. Set the value for all AllowOverride directives to None.   3. Remove any AllowOverrideList directives found."
    #evidencia="$(getEvidencia "2" "$cmd1")"
 
-   sal_44=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getEvidencia "2" "$cmd1")")
+   sal_44=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado"  "$(getBase64 "$(getEvidencia "2" "$cmd1")")"  "$id")
    #echo -e "\n \n $sal_44"
 }
 

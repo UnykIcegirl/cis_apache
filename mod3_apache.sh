@@ -56,11 +56,12 @@ function Mod3_1(){
    fi
 
    # JSON ---------------------------
+   id="APH-GS-CSA-09"
    nombre="3.1 Ensure the Apache Web Server Runs As a Non-Root User"
    descripcion="Although Apache is typically started with root privileges in order to listen on port 80 and 443, it can and should run as another non-root user in order to perform the web services. The Apache User and Group directives are used to designate the user and group that the Apache worker processes will assume."
    remediacion="Perform the following:  1. If the apache user and group do not already exist, create the account and group as a unique system account: # groupadd -r apache # useradd apache -r -g apache -d /var/www -s /sbin/nologin   2. Configure the Apache user and group in the Apache configuration file httpd.conf: User apache  Group apache"
 
-   sal_31=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "Configuracion existente: Directorio configuración $dirConf Usuario: $usuario id-($iduser)  Grupo: $grupo id-($idgpo) UID_MIN: $uid_min")
+   sal_31=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "Configuracion existente: Directorio configuración $dirConf Usuario: $usuario id-($iduser)  Grupo: $grupo id-($idgpo) UID_MIN: $uid_min")" "$id" )
    #echo -e "\n \n $sal_31"
 }
 
@@ -86,12 +87,13 @@ function Mod3_2(){
    fi
 
    # JSON ---------------------------
+   id="APH-GS-CSA-10"
    nombre="3.2 Ensure the Apache User Account Has an Invalid Shell"
    descripcion="The apache account must not be used as a regular login account, and should be assigned an invalid or nologin shell to ensure that the account cannot be used to login."
    remediacion="Change the apache account to use the nologin shell or an invalid shell such as /dev/null:  # chsh -s /sbin/nologin apache "
    evidencia="$(getEvidencia "2" "$(grep -E ^$usuario /etc/passwd)")"
 
-   sal_32=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
+   sal_32=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$evidencia")" "$id")
    #echo -e "\n \n $sal_32"
 }
 
@@ -116,12 +118,13 @@ function Mod3_3(){
    fi
 
    # JSON ---------------------------
+   id="APH-GS-CSA-11"
    nombre="3.3 Ensure the Apache User Account Is Locked"
    descripcion="The user account under which Apache runs should not have a valid password, but should be locked."
    remediacion="Use the passwd command to lock the apache account: # passwd -l apache"
    evidencia="$(getEvidencia "1" "$(passwd -S $usuario)")"
 
-   sal_33=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
+   sal_33=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$evidencia")" "$id")
    #echo -e "\n \n $sal_33"
 }
 
@@ -147,6 +150,7 @@ function Mod3_4(){
    fi
 
    # JSON ---------------------------
+   id="APH-GS-CSA-12"
    cmd1="$(find $APACHE_PREFIX -path $APACHE_PREFIX/htdocs -prune -o \! -user root -ls | head -1)"
    cmd2="$(find $APACHE_PREFIX -path $APACHE_PREFIX/www -prune -o \! -user root -ls | head -1)"
    nombre="3.4 Ensure Apache Directories and Files Are Owned By Root"
@@ -155,7 +159,7 @@ function Mod3_4(){
    evidencia="$(getEvidencia "2" "$cmd1")"
    evid2="$(getEvidencia "2" "$cmd2")"
 
-   sal_34=$(getJsonEv2 "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia" "$evid2")
+   sal_34=$(getJsonEv2 "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$evidencia")" "$(getBase64 "$evid2")" "$id")
    #echo -e "\n \n $sal_34"
 }
 
@@ -182,6 +186,7 @@ function Mod3_5(){
    fi
 
    # JSON ---------------------------
+   id="APH-GS-CSA-13"
    cmd1="$(find $APACHE_PREFIX -path $APACHE_PREFIX/htdocs -prune -o \! -group root -ls | head -1)"
    cmd2="$(find $APACHE_PREFIX -path $APACHE_PREFIX/www -prune -o \! -group root -ls | head -1)"
    nombre="3.5 Ensure the Group Is Set Correctly on Apache Directories and Files"
@@ -190,7 +195,7 @@ function Mod3_5(){
    evidencia="$(getEvidencia "2" "$cmd1")"
    evid2="$(getEvidencia "2" "$cmd2")"
 
-   sal_35=$(getJsonEv2 "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia" "$evid2")
+   sal_35=$(getJsonEv2 "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$evidencia")" "$(getBase64 "$evid2")" "$id")
    #echo -e "\n \n $sal_35"
 }
 
@@ -215,13 +220,14 @@ function Mod3_6(){
    fi
 
    # JSON ---------------------------
+   id="APH-GS-CSA-14"
    cmd1=$(find -L $APACHE_PREFIX \! -type l -perm -o=w -ls | head -1 | xargs)
    nombre="3.6 Ensure Other Write Access on Apache Directories and Files Is Restricted"
    descripcion="Permissions on Apache directories should generally be rwxr-xr-x (755) and file permissions should be similar except not executable unless appropriate. This applies to all of the Apache software directories and files installed with the possible exception of the web document root $APACHE_PREFIX/htdocs. The directories and files in the web document root may have a designated group with write access to allow web content to be updated. In summary, the minimum recommendation is to not allow write access by other."
    remediacion="Perform the following to remove other write access on the $APACHE_PREFIX directories.  # chmod -R o-w $APACHE_PREFIX"
    evidencia="$(getEvidencia "2" "$cmd1")"
 
-   sal_36=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
+   sal_36=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$evidencia")" "$id")
    #echo -e "\n \n $sal_36"
 }
 
@@ -256,6 +262,7 @@ function Mod3_7(){
    fi
 
    # JSON ---------------------------
+   id="APH-GS-CSA-15"
    nombre="3.7 Ensure the Core Dump Directory Is Secured"
    descripcion="The CoreDumpDirectory directive is used to specify the directory Apache attempts to switch to before creating the core dump. Core dumps will be disabled if the directory is not writable by the Apache user. Also, core dumps will be disabled if the server is started as root and switches to a non-root user, as is typical. It is recommended that the CoreDumpDirectory directive be set to a directory that is owned by the root user, owned by the group the Apache HTTPD process executes as, and be inaccessible to other users."
    remediacion="Either remove the CoreDumpDirectory directive from the Apache configuration files or ensure that the configured directory meets the following requirements.  1. CoreDumpDirectory is not to be within the Apache web document root ($APACHE_PREFIX/htdocs)  2. Must be owned by root and have a group ownership of the Apache group (as defined via the Group directive)  # chown root:apache /var/log/httpd   3. Must have no read-write-search access permission for other users.  # chmod o-rwx /var/log/httpd"
@@ -263,7 +270,7 @@ function Mod3_7(){
    evid2="$(getEvidencia "2" "$varDir")"
    evid3="$(getEvidencia "2" "$variable2")"
 
-   sal_37=$(getJsonEv3 "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia" "$evid2" "$evid3")
+   sal_37=$(getJsonEv3 "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$evidencia")" "$(getBase64 "$evid2")" "$(getBase64 "$evid3")" "$id")
    #echo -e "\n \n $sal_37"
 }
 
@@ -311,11 +318,12 @@ function Mod3_8(){
    fi
 
    # JSON ---------------------------
+   id="APH-GS-CSA-16"
    nombre="3.8 Ensure the Lock File Is Secured"
    descripcion="The Mutex directive sets the locking mechanism used to serialize access to resources. It may be used to specify that a lock file is to be used as a mutex mechanism and may provide the path to the lock file to be used with the fcntl(2) or flock(2) system calls. Most Linux systems will default to using semaphores instead, so the directive may not apply. However, in the event a lock file is used, it is important for the lock file to be in a local directory that is not writable by other users."
    remediacion="Find the directory path in which the lock file would be created. The default value is the ServerRoot/logs directory.  1. Modify the directory if the path is a directory within the Apache DocumentRoot  2. Change the ownership and group to be root:root, if not already.  3. Change the permissions so that the directory is only writable by root, or the user under which Apache initially starts up (default is root),  4. Check that the lock file directory is on a locally mounted hard drive rather than an NFS mounted file system."
 
-   sal_38=$(getJsonEv4 "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia" "$(getEvidencia "2" "$variable2")" "$(getEvidencia "2" "$variable3")" "$(getEvidencia "2" "$variable4")")
+   sal_38=$(getJsonEv4 "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$evidencia")"  "$(getBase64 "$(getEvidencia "2" "$variable2")")"  "$(getBase64 "$(getEvidencia "2" "$variable3")")"  "$(getBase64 "$(getEvidencia "2" "$variable4")")" "$id")
    #echo -e "\n \n $sal_38"
 }
 
@@ -366,6 +374,7 @@ function Mod3_9(){
    fi
 
    # JSON ---------------------------
+   id="APH-GS-CSA-17"
    nombre="3.9 Ensure the Pid File Is Secured"
    descripcion="The PidFile directive sets the file path to the process ID file to which the server records the process id of the server, which is useful for sending a signal to the server process or for checking on the health of the process."
    remediacion="1. Find the directory in which the PidFile would be created. The default value is the ServerRoot/logs directory.  2. Modify the directory if the PidFile is in a directory within the Apache `DocumentRoot`.  3. Change the ownership and group to be root:root, if not already.  4. Change the permissions so that the directory is only writable by root, or the user under which Apache initially starts up (default is root)."
@@ -374,7 +383,7 @@ function Mod3_9(){
    evid3="$(getEvidencia "2" "$(find -L $APACHE_PREFIX -name httpd.pid \! -group $grupo_validar | head -1)")"
    evid4="$(getEvidencia "2" "$(find $dirLogs -type d -perm -o=rwx -ls | head -1)")"
 
-   sal_39=$(getJsonEv4 "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia" "$evid2" "$evid3" "$evid4")
+   sal_39=$(getJsonEv4 "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$evidencia")" "$(getBase64 "$evid2")" "$(getBase64 "$evid3")" "$(getBase64 "$evid4")" "$id")
    #echo -e "\n \n $sal_39"
 }
 
@@ -433,6 +442,7 @@ function Mod3_10(){
    fi
 
    # JSON ----------------------------
+   id="APH-GS-CSA-18"
    nombre="3.10 Ensure the ScoreBoard File Is Secured"
    descripcion="The ScoreBoardFile directive sets a file path which the server will use for inter-process communication (IPC) among the Apache processes. On most Linux platforms, shared memory will be used instead of a file in the file system, so this directive is not generally needed and does not need to be specified. However, if the directive is specified, then Apache will use the configured file for the inter-process communication. Therefore, if it is specified, it needs to be located in a secure directory."
    remediacion="1. Check to see if the ScoreBoardFile is specified in any of the Apache configuration files. If it is not present, no changes are required.  2. If the directive is present, find the directory in which the ScoreBoardFile would be created. The default value is the ServerRoot/logs directory.  3. Modify the directory if the ScoreBoardFile is in a directory within the Apache DocumentRoot  4. Change the ownership and group to be root:root, if not already.  5. Change the permissions so that the directory is only writable by root, or the user under which apache initially starts up (default is root).  6. Check that the scoreboard file directory is on a locally mounted hard drive rather than an NFS mounted file system."
@@ -441,7 +451,7 @@ function Mod3_10(){
    evid3="$(getEvidencia "2" "$(find $APACHE_PREFIX -name ScoreBoardFile \! -group $grupo_validar | head -1)")"
    evid4="$(getEvidencia "2" "$(find $APACHE_PREFIX -name ScoreBoardFile \! -perm -644 | head -1)")"
 
-   sal_310=$(getJsonEv4 "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia" "$evid2" "$evid3" "$evid4")
+   sal_310=$(getJsonEv4 "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$evidencia")" "$(getBase64 "$evid2")" "$(getBase64 "$evid3")"  "$(getBase64 "$evid4")" "$id")
    #echo -e "\n \n $sal_310"
 }
 
@@ -467,12 +477,13 @@ function Mod3_11(){
    fi
 
    # JSON ---------------------------
+   id="APH-GS-CSA-19"
    nombre="3.11 Ensure Group Write Access for the Apache Directories and Files Is Properly Restricted"
    descripcion="Group permissions on Apache directories should generally be r-x and file permissions should be similar except not executable if executable is not appropriate. This applies to all of the Apache software directories and files installed with the possible exception of the web document root $DOCROOT defined by Apache DocumentRoot and defaults to $APACHE_PREFIX/htdocs. The directories and files in the web document root may have a designated web development group with write access to allow web content to be updated."
    remediacion="Perform the following to remove group write access on the $APACHE_PREFIX directories. # chmod -R g-w $APACHE_PREFIX"
    evidencia="$(getEvidencia "2" "$(find -L $APACHE_PREFIX \! -type l -perm /g=w -ls | head -1)")"
 
-   sal_311=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
+   sal_311=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$evidencia")" "$id")
    #echo -e "\n \n $sal_311"
 }
 
@@ -499,12 +510,13 @@ function Mod3_12(){
    fi
 
    # JSON ---------------------------
+   id="APH-GS-CSA-20"
    nombre="3.12 Ensure Group Write Access for the Document Root Directories and Files Is Properly Restricted"
    descripcion="Group permissions on Apache Document Root directories $DOCROOT may need to be writable by an authorized group such as development, support, or a production content management tool. However, it is important that the Apache group used to run the server does not have write access to any directories or files in the document root."
    remediacion="Perform the following to remove group write access on the $DOCROOT directories and files with the apache group.  # find -L $DOCROOT -group $GRP -perm /g=w -print | xargs chmod g-w"
    evidencia="$(getEvidencia "2" "$(find -L $APACHE_PREFIX -group $GRP -perm /g=w -ls | head -1)")"
 
-   sal_312=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
+   sal_312=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$evidencia")" "$id")
    #echo -e "\n \n $sal_312"
 }
 

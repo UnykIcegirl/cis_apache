@@ -50,24 +50,23 @@ function Mod9_1(){
    
    local resultado
    if [[ "$contFinal" > 0 ]]; then    
-     #echo "FALLO"; 
        echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
        resultado="No Cumple"
        ((++fail))
    else
-     #echo "PASO";
        echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
        resultado="Cumple"
        ((++pass))
    fi
 
    # JSON --------------------------------------------------------------------------------
+   id="APH-GS-CSA-60"
    nombre="9.1 Ensure the TimeOut Is Set to 10 or Less"
    descripcion="Denial of Service (DoS) is an attack technique with the intent of preventing a web site from serving normal user activity. DoS attacks, which are normally applied to the network layer, are also possible at the application layer. These malicious attacks can succeed by starving a system of critical resources, vulnerability exploit, or abuse of functionality. Although there is no 100% solution for preventing DoS attacks, the following recommendation uses the Timeout directive to mitigate some of the risk, by requiring more effort for a successful DoS attack. Of course, DoS attacks can happen in rather unintentional ways as well as intentional and these directives will help in many of those situations as well."
    remediacion="Perform the following to implement the recommended state: Add or modify the Timeout directive in the Apache configuration to have a value of 10 seconds or shorter.  Timeout 10"
    evidencia="Valor actual del atributo 'Timeout' es: $(cat "$dirConf" | grep -iE "^Timeout [0-9]{,2}")"
 
-   sal_91=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
+   sal_91=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$evidencia")" "$id")
    #echo -e "\n \n $sal_91"
 }
 
@@ -82,24 +81,23 @@ function Mod9_2(){
    # we captured output of the subshell, let's interpret it
    if [ "$output" != "On" ] ; then
        # print the reason why we are failing
-       #echo "No cumple"
        echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
        resultado="No Cumple"
        ((++fail))
    else
-       #echo "Cumple"
        echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
        resultado="Cumple"
        ((++pass))
    fi
 
    # JSON --------------------------------------------------------------------------------
+   id="APH-GS-CSA-61"
    nombre="9.2 Ensure KeepAlive Is Enabled"
    descripcion="The KeepAlive directive controls whether Apache will reuse the same TCP connection per client to process subsequent HTTP requests from that client. It is recommended that the KeepAlive directive be set to On."
    remediacion="Perform the following to implement the recommended state: Add or modify the KeepAlive directive in the Apache configuration to have a value of On, so that KeepAlive connections are enabled.   keepAlive On"
    evidencia="El valor del atributo 'KeepAlive' es: $(grep -i "^\s*KeepAlive " "$dirConf")"
 
-   sal_92=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
+   sal_92=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$evidencia")" "$id")
    #echo -e "\n \n $sal_92"
 }
 
@@ -138,24 +136,23 @@ function Mod9_3(){
    
    local resultado
    if [[ "$contFinal" > 0 ]]; then
-     #echo "No cumple";
        echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
        resultado="No Cumple"
        ((++fail))
    else
-     #echo "Cumple";
        echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
        resultado="Cumple"
        ((++pass))
    fi
 
    # JSON --------------------------------------------------------------------------------
+   id="APH-GS-CSA-62"
    nombre="9.3 Ensure MaxKeepAliveRequests is Set to a Value of 100 or Greater"
    descripcion="The MaxKeepAliveRequests directive limits the number of requests allowed per connection when KeepAlive is on. If it is set to 0, unlimited requests will be allowed."
    remediacion="Perform the following to implement the recommended state: Add or modify the MaxKeepAliveRequests directive in the Apache configuration to have a value of 100 or more.  MaxKeepAliveRequests 100"
    evidencia="El valor actual del atributo 'MaxKeepAliveRequests' es: $cadena "
 
-   sal_93=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
+   sal_93=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$evidencia")" "$id")
    #echo -e "\n \n $sal_93"
 }
 
@@ -194,24 +191,23 @@ function Mod9_4(){
    
    local resultado
    if [[ "$contFinal" > 0 ]]; then
-     #echo "No cumple";
        echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
        resultado="No Cumple"
        ((++fail))
    else
-     #echo "Cumple";
        echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
        resultado="Cumple"
        ((++pass))
    fi
 
    # JSON --------------------------------------------------------------------------------
+   id="APH-GS-CSA-63"
    nombre="9.4 Ensure KeepAliveTimeout is Set to a Value of 15 or Less"
    descripcion="The KeepAliveTimeout directive specifies the number of seconds Apache will wait for a subsequent request before closing a connection that is being kept alive."
    remediacion="Perform the following to implement the recommended state: Add or modify the KeepAliveTimeout directive in the Apache configuration to have a value of 15 or less.  KeepAliveTimeout 15"
    evidencia="El valor actual del atributo 'KeepAliveTimeout' es: $cadena "
 
-   sal_94=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
+   sal_94=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$evidencia")" "$id")
    #echo -e "\n \n $sal_94"
 }
 
@@ -245,25 +241,24 @@ function Mod9_5(){
    
    local resultado   
    if [[ "$output" == "1" ]] && [[ "$contFinal" == 0 ]]; then
-    #echo "Cumple";
        echo -e "           -------------------------------------------------------------------------------------------------------------------------${GREEN} Cumple ${WHITE}"
        resultado="Cumple"
        ((++pass))   
    else
-     #echo "No cumple";
        echo -e "           ------------------------------------------------------- -----------------------------------------------------------------${RED} No Cumple ${WHITE}"
        resultado="No Cumple"
        ((++fail))
    fi
 
    # JSON --------------------------------------------------------------------------------
+   id="APH-GS-CSA-64"
    nombre="9.5 Ensure the Timeout Limits for Request Headers is Set to 40 or Less"
    descripcion="The RequestReadTimeout directive allows configuration of timeout limits for client requests. The header portion of the directive provides for an initial timeout value, a maximum timeout and a minimum rate. The minimum rate specifies that after the initial timeout, the server will wait an additional 1 second for each N bytes received. The recommended setting is to have a maximum timeout of 40 seconds or less. Keep in mind that for SSL/TLS virtual hosts the time for the TLS handshake must fit within the timeout."
    remediacion="Perform the following to implement the recommended state:    1. Load the mod_requesttimeout module in the Apache configuration with the following configuration.  LoadModule reqtimeout_module modules/mod_reqtimeout.so   2. Add a RequestReadTimeout directive similar to the one below with the maximum request header timeout value of 40 seconds or less.  RequestReadTimeout header=20-40,MinRate=500 body=20,MinRate=500"
    evidencia="Configuración del Módulo 'mod_requesttimeout': $variable "
    evid2="Valor de la directiva 'RequestReadTimeout'  $(grep -i "^\s*RequestReadTimeout" "$dirConf")"
 
-   sal_95=$(getJsonEv2 "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia", $evid2)
+   sal_95=$(getJsonEv2 "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$evidencia")"  "$(getBase64 "$evid2")" "$id")
    #echo -e "\n \n $sal_95"
 }
 
@@ -315,12 +310,13 @@ function Mod9_6(){
    fi
 
    # JSON --------------------------------------------------------------------------------
+   id="APH-GS-CSA-65"
    nombre="9.6 Ensure Timeout Limits for the Request Body is Set to 20 or Less"
    descripcion="The RequestReadTimeout directive also allows setting timeout values for the body portion of a request. The directive provides for an initial timeout value, and a maximum timeout and minimum rate. The minimum rate specifies that after the initial timeout, the server will wait an additional 1 second for each N bytes received. The recommended setting is to have a maximum timeout of 20 seconds or less. The default value is body=20,MinRate=500."
    remediacion="Load the mod_requesttimeout module in the Apache configuration with the following configuration.   LoadModule reqtimeout_module modules/mod_reqtimeout.so  Add a RequestReadTimeout directive similar to the one below with the maximum request body timeout value of 20 seconds or less.   RequestReadTimeout header=20-40,MinRate=500 body=20,MinRate=500"
    evidencia="Valor de la directiva 'RequestReadTimeout' $(grep -i "^\s*RequestReadTimeout" "$dirConf") "
 
-   sal_96=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$evidencia")
+   sal_96=$(getJsonEv "$nombre" "$descripcion" "$remediacion" "$resultado" "$(getBase64 "$evidencia")" "$id")
    #echo -e "\n \n $sal_96"
 }
 
