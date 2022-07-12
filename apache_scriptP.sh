@@ -174,8 +174,9 @@ function getJsonEv() {
     remediacion=$3
     resultado=$4
     evidencia=$5
+    id=$6
 
-    json=$(jo id="AP-BAZ-XXX" nombre="$nombre" descripcion="$descripcion" remediacion="$remediacion" estado="$resultado" evidencia[]="$evidencia")
+    json=$(jo id="$id" nombre="$nombre" descripcion="$descripcion" remediacion="$remediacion" estado="$resultado" evidencia[]="$evidencia")
     echo "$json"
 
 }
@@ -187,8 +188,9 @@ function getJsonEv2() {
     resultado=$4
     evid=$5
     evid2=$6
+    id=$7
 
-    json=$(jo id="AP-BAZ-XXX" nombre="$nombre" descripcion="$descripcion" remediacion="$remediacion" estado="$resultado" evidencia[]="$evid" evidencia[]="$evid2")
+    json=$(jo id="$id" nombre="$nombre" descripcion="$descripcion" remediacion="$remediacion" estado="$resultado" evidencia[]="$evid" evidencia[]="$evid2")
     echo "$json"
 
 }
@@ -201,8 +203,9 @@ function getJsonEv3() {
     evid=$5
     evid2=$6
     evid3=$7
+    id=$8
 
-    json=$(jo id="AP-BAZ-XXX" nombre="$nombre" descripcion="$descripcion" remediacion="$remediacion" estado="$resultado" evidencia[]="$evid" evidencia[]="$evid2" evidencia[]="$evid3")
+    json=$(jo id="$id" nombre="$nombre" descripcion="$descripcion" remediacion="$remediacion" estado="$resultado" evidencia[]="$evid" evidencia[]="$evid2" evidencia[]="$evid3")
     echo "$json"
 
 }
@@ -216,12 +219,20 @@ function getJsonEv4() {
     evid2=$6
     evid3=$7
     evid4=$8
+    id=$9
 
-    json=$(jo id="AP-BAZ-XXX" nombre="$nombre" descripcion="$descripcion" remediacion="$remediacion" estado="$resultado" evidencia[]="$evid" evidencia[]="$evid2" evidencia[]="$evid3" evidencia[]="$evid4")
+    json=$(jo id="$id" nombre="$nombre" descripcion="$descripcion" remediacion="$remediacion" estado="$resultado" evidencia[]="$evid" evidencia[]="$evid2" evidencia[]="$evid3" evidencia[]="$evid4")
     echo "$json"
 
 }
 #------------------------------------------------------------------------------------------
+
+#---- Funcion para encodear base64 ------------------------------------------------
+function getBase64() {
+    etext=`echo -n $1 | base64 -w 0`
+    echo "$etext"
+}
+# --- fin base64 ------------------------------------------------------------------
 
 # --- Funciones para las evidencias de resultados
 function getEvidencia() {
@@ -289,6 +300,7 @@ function main(){
    # --- Generacion JSON SALIDA  ----------------
    output="{\"tipo\": \"Resultado_de_revision\", \"informacion_escaneo\":$(getInformacion_escaneo), \"informacion_sistema\":$(getInformacion_sistema),"
    output="$output \"resultados\":[ $sal_mod2, $sal_mod3, $sal_mod4, $sal_mod5, $sal_mod6, $sal_mod7, $sal_mod8, $sal_mod9, $sal_mod10, $sal_mod11, $sal_mod12 ] }"
+#   output="$output \"resultados\":[ $sal_mod12 ] }"
 #   echo -e "\n\n $output"
    
    echo $output >> "$dirEjecucion/salida_apache.json"
