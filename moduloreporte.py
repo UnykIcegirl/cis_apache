@@ -2,6 +2,7 @@ import json
 import argparse
 import codecs
 import sys
+import base64
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f","--file",help="archivo json a mostrar en el reporte", type=str)
@@ -11,6 +12,15 @@ print (args.file)
 
 file= open(args.file,"r")
 myjson=json.load(file)
+
+def sanitizar(cadena):
+    x=cadena.replace("<","&lt")
+    x=x.replace(">","&gt")
+    x=x.replace("\\n","<br>")
+    return x
+
+def decodeb64(cadena):
+    return base64.b64decode(cadena).decode('utf-8')
 
 strFor =  "<!DOCTYPE html>"
 strFor = strFor + "<html><head>"
@@ -49,7 +59,7 @@ strFor = strFor + "<label>Usuario: "+ myjson['informacion_escaneo']['usuario_eje
 strFor = strFor + "<label>Sistema Operativo: "+ myjson['informacion_sistema']['sistema_operativo']  +"</label><br>"
 strFor = strFor + "<label>Detalle Sistema Operativo: "+ myjson['informacion_sistema']['detalleSO']  +"</label><br>"
 strFor = strFor + "<label>Release: "+ myjson['informacion_sistema']['releaseSO']  +"</label><br>"
-strFor = strFor + "<label>Version Apache: "+ myjson['informacion_sistema']['version_apache']  +"</label><br>"
+strFor = strFor + "<label>Version Apache: "+ myjson['informacion_sistema']['version']  +"</label><br>"
 strFor = strFor + "<label>Directorio instalacion: "+ myjson['informacion_sistema']['directorio_instalacion']  +"</label><br>"
 strFor = strFor + "<label>Directorio configuracion: "+ myjson['informacion_sistema']['directorio_conf']  +"</label><br>"
 strFor = strFor + "<label>Usuario instalacion apache: "+ myjson['informacion_sistema']['usuario_apache']  +"</label><br>"
@@ -93,22 +103,20 @@ for r in myjson['resultados']:
     strFor = strFor + "<div id='ruleResultArea'>"
     strFor = strFor + "<h2>Descripcion</h2>"
     strFor = strFor + "<br>"
-    strFor = strFor + "<p> &emsp;&emsp;" + r['descripcion'] + "</p>"
+    strFor = strFor + "<p> &emsp;&emsp;" + sanitizar(r['descripcion']) + "</p>"
     strFor = strFor + "<br>"
     strFor = strFor + "</div>"
     strFor = strFor + "<div id='ruleResultArea'>"
     strFor = strFor + "<h2>Remediacion</h2>"
     strFor = strFor + "<br>"
-    strFor = strFor + "<p> &emsp;&emsp;" + r['remediacion'] + "</p>"
+    strFor = strFor + "<p> &emsp;&emsp;" + sanitizar(r['remediacion']) + "</p>"
     strFor = strFor + "<br>"
     strFor = strFor + "</div>"
     strFor = strFor + "<div id='ruleResultArea'>"
     strFor = strFor + "<h2>Evidencia</h2>"
 
     for evidencia in r['evidencia']:
-      strFor = strFor + "<pre><pre>"+ evidencia + "</pre></pre>"
-      
-    #strFor = strFor + "<pre><pre>"+ r['evidencia'] + "</pre></pre>"
+      strFor = strFor + "<pre><pre>"+ sanitizar(decodeb64(evidencia)) + "</pre></pre>"
 
     strFor = strFor + "</div>"
     strFor = strFor + "<br><br>"
