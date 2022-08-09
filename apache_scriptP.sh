@@ -107,16 +107,17 @@ echo ""
 
 # ----- INFORMACION SISTEMA Y ESCANEO   ------------------------------
   function getInformacion_escaneo() {
-    fecha_escaneo=$(/bin/date +'%d-%m-%Y - %T')
+    fecha_escaneo=$(/bin/date +'%m/%d/%Y')
+#    fecha_escaneo=$(/bin/date +'%m/%d/%Y - %T')
     usuario_ejecutor=$(whoami)
-    version_script="'1.0'"
+    version_script=\"1.0\"
     tipo_de_servidor="WEB"
     tecnologia=$(httpd -V|grep 'Server version' | cut -d':' -f 2)
     version_tecnologia=["'2.4.53'","'2'"]
     version=$(httpd -V|grep 'Server version' | cut -d':' -f 2 | cut -d'/' -f 2 | cut -d' ' -f 1)
               
     # JSON ---------------------------
-    local informacion_escaneo=$(jo fecha_escaneo="$fecha_escaneo" usuario_ejecutor="$usuario_ejecutor" version_script="$version_script"  tipo_de_servidor="WEB" tecnologia="$tecnologia" version_tecnologica[]="2.4")
+    local informacion_escaneo=$(jo fecha_escaneo="$fecha_escaneo" usuario_ejecutor="$usuario_ejecutor" version_script="1.0 "  tipo_de_servidor="WEB" tecnologia="$tecnologia" version_tecnologica[]="2.4")
     echo "$informacion_escaneo"
 
   }
@@ -227,6 +228,15 @@ function getJsonEv4() {
 }
 #------------------------------------------------------------------------------------------
 
+# --- Funcion para sanitizar -----------------------------------------------------
+function sanitizar() {
+    cadena=$1
+    #final=${cadena//[\n]/\\\\n}
+    final="$cadena" | sed -r 's/[\n]+/\\n/g'
+    echo $final
+}
+
+
 #---- Funcion para encodear base64 ------------------------------------------------
 function getBase64() {
     etext=`echo -n $1 | base64 -w 0`
@@ -300,8 +310,8 @@ function main(){
    # --- Generacion JSON SALIDA  ----------------
    output="{\"tipo\": \"Resultado_de_revision\", \"informacion_escaneo\":$(getInformacion_escaneo), \"informacion_sistema\":$(getInformacion_sistema),"
    output="$output \"resultados\":[ $sal_mod2, $sal_mod3, $sal_mod4, $sal_mod5, $sal_mod6, $sal_mod7, $sal_mod8, $sal_mod9, $sal_mod10, $sal_mod11, $sal_mod12 ] }"
-#   output="$output \"resultados\":[ $sal_mod12 ] }"
-#   echo -e "\n\n $output"
+   #output="$output \"resultados\":[ $sal_mod5 ] }"
+   echo -e "\n\n $output"
    
    echo $output >> "$dirEjecucion/salida_apache.json"
    # ---------------------------------------------------
